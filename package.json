@@ -2,7 +2,6 @@
   "name": "webpack-server-client-middleware",
   "version": "1.0.0",
   "main": "lib/middleware.js",
-  "module": "es/middleware.js",
   "author": "Daniil Veremchuk <daniel@verydanny.com>",
   "scripts": {
     "compile:commonjs": "rm -rf lib && tsc --module commonjs -d -p ./",
