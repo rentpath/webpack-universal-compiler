@@ -1,13 +1,14 @@
 {
   "name": "webpack-server-client-middleware",
   "version": "1.0.0",
-  "main": "lib/commonjs.js",
+  "main": "lib/middleware.js",
   "module": "es/middleware.js",
   "author": "Daniil Veremchuk <daniel@verydanny.com>",
   "scripts": {
     "compile:commonjs": "rm -r lib && tsc --module commonjs -d -p ./",
     "compile:es": "rm -r es && tsc --module es6 --outDir es -p ./",
-    "compile:watch": "rm -r lib && tsc --incremental --module commonjs -w -p ./"
+    "compile:watch": "rm -r lib && tsc --incremental --module commonjs -w -p ./",
+    "prepublish": "compile:commonjs"
   },
   "license": "MIT",
   "private": false,

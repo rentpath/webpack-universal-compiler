@@ -16,7 +16,7 @@ function parseArgs(args: [(MultiCompiler | Compiler), Compiler?, object?]) {
   }
 }
 
-export default function webpackClientServerMiddleware(
+export function webpackClientServerMiddleware(
   ...args: [(MultiCompiler | Compiler), Compiler, object]
 ): any
 export default function webpackClientServerMiddleware(
@@ -24,3 +24,5 @@ export default function webpackClientServerMiddleware(
 ) {
   const { compiler } = parseArgs(args)
 }
+
+export { clientServerCompiler }
