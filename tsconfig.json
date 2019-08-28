@@ -12,7 +12,6 @@
 		"forceConsistentCasingInFileNames": true,
 		"noImplicitReturns": true,
 		"strict": true,
-		"declaration": true,
 		"noUnusedLocals": true,
 		"noImplicitAny": true,
 		"skipLibCheck": true,

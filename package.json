@@ -5,9 +5,9 @@
   "module": "es/middleware.js",
   "author": "Daniil Veremchuk <daniel@verydanny.com>",
   "scripts": {
-    "compile:commonjs": "tsc --module commonjs -p ./",
-    "compile:es": "tsc --module es6 --outDir es -p ./",
-    "compile:watch": "tsc --incremental --module commonjs -w -p ./"
+    "compile:commonjs": "rm -r lib && tsc --module commonjs -d -p ./",
+    "compile:es": "rm -r es && tsc --module es6 --outDir es -p ./",
+    "compile:watch": "rm -r lib && tsc --incremental --module commonjs -w -p ./"
   },
   "license": "MIT",
   "private": false,
