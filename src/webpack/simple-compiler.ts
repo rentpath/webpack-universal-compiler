@@ -1,7 +1,7 @@
 import webpack, { Compiler } from 'webpack'
 import assert from 'assert'
 
-import { nodeFs } from '../helpers/nodeFs'
+import { nodeFs } from '../helpers/node-fs'
 
 import { observeWebpackCompiler } from './simpler-compiler-observer'
 import { wrap } from '../helpers/wrap'
