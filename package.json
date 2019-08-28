@@ -1,0 +1,35 @@
+{
+  "name": "webpack-server-client-middleware",
+  "version": "1.0.0",
+  "main": "lib/commonjs.js",
+  "module": "es/middleware.js",
+  "author": "Daniil Veremchuk <daniel@verydanny.com>",
+  "scripts": {
+    "compile:commonjs": "tsc --module commonjs -p ./",
+    "compile:es": "tsc --module es6 --outDir es -p ./",
+    "compile:watch": "tsc --incremental --module commonjs -w -p ./"
+  },
+  "license": "MIT",
+  "private": false,
+  "devDependencies": {
+    "@types/mkdirp": "^0.5.2",
+    "@types/node": "^12.7.2",
+    "@types/webpack": "^4.39.1",
+    "@typescript-eslint/eslint-plugin": "^2.0.0",
+    "@typescript-eslint/parser": "^2.0.0",
+    "eslint": "^6.2.1",
+    "eslint-config-prettier": "^6.1.0",
+    "eslint-plugin-prettier": "^3.1.0",
+    "prettier": "^1.18.2",
+    "typescript": "^3.5.3"
+  },
+  "dependencies": {
+    "chalk": "^2.4.2",
+    "figures": "^3.0.0",
+    "indent-string": "^4.0.0",
+    "mkdirp": "^0.5.1",
+    "pretty-error": "^2.1.1",
+    "webpack": "4.39.1",
+    "webpack-dev-middleware": "^3.7.0"
+  }
+}
