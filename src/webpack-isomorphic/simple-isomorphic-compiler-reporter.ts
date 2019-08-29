@@ -27,8 +27,8 @@ const extraRenderers = {
 }
 
 export function startReportingWebpackIsomorphic(
-  compiler: SimpleCompiler,
-  options: ReporterOptionsSingleCompiler
+  compiler: any,
+  options: ReporterOptionsIsomorphicCompiler
 ) {
   options = {
     printStats: ({ clientStats, serverStats }) => {

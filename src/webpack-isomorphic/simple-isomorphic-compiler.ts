@@ -64,8 +64,15 @@ export function clientServerCompiler(
     },
 
     watch(
-      options: webpack.Compiler.WatchOptions,
-      handler: webpack.Compiler.Watching.Handler
+      options?: webpack.Compiler.WatchOptions,
+      handler?: (
+        err: Error | undefined,
+        stats: {
+          duration?: number
+          clientStats?: webpack.Stats
+          serverStats?: webpack.Stats
+        }
+      ) => void
     ) {
       clientCompiler.assertIdle('watch')
       serverCompiler.assertIdle('watch')
@@ -78,13 +85,13 @@ export function clientServerCompiler(
       handler =
         handler &&
         wrap(handler, handler => {
-          !state.isCompiling &&
-            handler(
-              state.error
-                ? state.error
-                : new Error('Error, no webpack error state generated'),
-              (state.compilation as any) as webpack.Stats
-            )
+          if (!state.isCompiling) {
+            if (state.error) {
+              handler(state.error, state.compilation)
+            }
+
+            handler(undefined, state.compilation)
+          }
         })
 
       const clientInvalidate = clientCompiler.watch(options, handler)

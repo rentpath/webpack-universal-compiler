@@ -88,8 +88,14 @@ export function simpleWebpackCompiler(
     },
 
     watch(
-      options: webpack.Compiler.WatchOptions,
-      handler: webpack.Compiler.Watching.Handler = () => {}
+      options?: webpack.Compiler.WatchOptions,
+      handler?: (
+        err: Error | undefined,
+        stats: {
+          duration?: number
+          stats?: webpack.Stats
+        }
+      ) => void
     ) {
       compiler.assertIdle('watch')
 
@@ -105,16 +111,19 @@ export function simpleWebpackCompiler(
       handler =
         handler &&
         wrap(handler, handler => {
-          !state.isCompiling &&
-            handler(
-              state.error
-                ? state.error
-                : new Error('Error, no webpack error state generated'),
-              (state.compilation as unknown) as webpack.Stats
-            )
+          if (!state.isCompiling) {
+            if (state.error) {
+              handler(state.error, state.compilation)
+            }
+
+            handler(undefined as any, state.compilation)
+          }
         })
 
-      const webpackWatching = webpackCompiler.watch(options, handler)
+      const webpackWatching = webpackCompiler.watch(
+        options ? options : {},
+        handler as webpack.Compiler.Handler
+      )
 
       return () => {
         if (webpackWatching !== state.webpackWatching) {

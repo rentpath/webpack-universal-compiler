@@ -1,7 +1,10 @@
 import chalk from 'chalk'
 import { Compiler, MultiCompiler, Configuration } from 'webpack'
 import { clientServerCompiler } from './webpack-isomorphic/simple-isomorphic-compiler'
+import { startReportingWebpackIsomorphic } from './webpack-isomorphic/simple-isomorphic-compiler-reporter'
 import { simpleWebpackCompiler } from './webpack/simple-compiler'
+import { startNotifying } from './utils/os-notifications'
+import { checkHashes } from './utils/check-hashes'
 import { MiddlewareOptions } from './types/middleware'
 import {
   isMiddlewareOptions,
@@ -10,6 +13,9 @@ import {
   isMultiConfig,
   isSingleConfiguration
 } from './types/type-guards'
+import { buildInMemoryFileSystem } from './utils/build-filesystem'
+
+import { NotifierOptions } from './utils/os-notifications'
 
 function parseOptions(options: MiddlewareOptions) {
   options = {
@@ -21,6 +27,9 @@ function parseOptions(options: MiddlewareOptions) {
     headers: { 'Cache-Control': 'max-age=0, must-revalidate' },
     ...options
   }
+
+  options.report = options.report === true ? {} : options.report
+  options.notify = options.notify === true ? {} : options.notify
 
   return options
 }
@@ -93,6 +102,30 @@ function webpackClientServerMiddleware(
   ]
 ) {
   const { compiler, options } = parseArgs(args)
+
+  if (options.inMemoryFilesystem) {
+    buildInMemoryFileSystem(compiler.client, compiler.server)
+  }
+
+  if (typeof options.report !== 'undefined' && options.report !== false) {
+    options.report = startReportingWebpackIsomorphic(
+      compiler,
+      options.report
+    ).options
+  }
+
+  if (options.notify && options.notify !== false) {
+    options.notify = startNotifying(
+      compiler,
+      options.notify as NotifierOptions
+    ).options
+  }
+
+  options.inMemoryFilesystem && checkHashes(compiler, options)
 }
 
-export { clientServerCompiler, webpackClientServerMiddleware, simpleWebpackCompiler }
+export {
+  clientServerCompiler,
+  webpackClientServerMiddleware,
+  simpleWebpackCompiler
+}

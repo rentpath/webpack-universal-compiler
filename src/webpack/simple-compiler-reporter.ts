@@ -38,14 +38,18 @@ export function startReportingWebpack(
     (displayStats = options.stats === 'once' ? false : displayStats)
   const write = (str: string) => options.write && options.write(str)
 
-  const onBegin = () => write(options.printStart())
+  const onBegin = () => {
+    if (options.printStart) {
+      return write(options.printStart())
+    }
+  }
 
   const onEnd = (compilation: CompilationStats) => {
-    if (compilation.duration) {
+    if (options.printSuccess && compilation.duration) {
       write(options.printSuccess(compilation))
     }
 
-    if (displayStats) {
+    if (displayStats && options.printStats) {
       write(options.printStats(compilation))
 
       didPrintStats()
@@ -53,11 +57,17 @@ export function startReportingWebpack(
   }
 
   const onError = (err?: string) => {
-    write(options.printFailure(err))
-    write(options.printError(err))
+    if (options.printFailure && options.printError) {
+      write(options.printFailure(err))
+      write(options.printError(err))
+    }
   }
 
-  const onInvalidate = () => write(options.printInvalidate())
+  const onInvalidate = () => {
+    if (options.printInvalidate) {
+      return write(options.printInvalidate())
+    }
+  }
 
   const stopReporting = () => {
     compiler

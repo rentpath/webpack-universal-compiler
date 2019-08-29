@@ -74,12 +74,10 @@ export function observeWebpackCompiler(webpackCompiler: webpack.Compiler) {
     eventEmitter.emit('begin')
 
     run.call(webpackCompiler, (error, stats) => {
-      const info = stats.toString(infoType)
-
       if (error) {
         Object.assign(state, {
           isCompiling: false,
-          prettyError: info,
+          prettyError: null,
           error,
           compilation: null
         })
