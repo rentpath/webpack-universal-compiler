@@ -3,30 +3,9 @@ import { EventEmitter } from 'events'
 import webpack from 'webpack'
 import { Tapable } from 'tapable'
 
-import { wrap } from '../helpers/wrap'
+import { statsToStringOptions } from '../const'
+import { wrap } from '../helpers/fp-functions'
 import { ObserveWebpackCompilerState } from '../types/compiler'
-
-const infoType = {
-  colors: true,
-  chunks: false,
-  entrypoints: false,
-  assets: false,
-  modules: false,
-  builtAt: false,
-  children: false,
-  cached: false,
-  errors: true,
-  errorDetails: true,
-  hash: false,
-  timings: false,
-  version: false,
-  warnings: true,
-  reasons: false,
-  publicPath: false,
-  performance: false,
-  moduleTrace: true,
-  chunkModules: false
-}
 
 const createAddHook = (webpackCompiler: webpack.Compiler) => <
   Name extends keyof typeof webpackCompiler.hooks
@@ -40,10 +19,9 @@ const createAddHook = (webpackCompiler: webpack.Compiler) => <
     method = 'tap'
   }
 
-  if (callback && webpackCompiler.hooks) {
-    webpackCompiler.hooks[name][method](
-      'simple-compiler',
-      (...args) => callback && callback(...args)
+  if (webpackCompiler.hooks) {
+    webpackCompiler.hooks[name][method]('simple-compiler', (...args) =>
+      (callback as Tapable.Handler)(...args)
     )
   }
 }
@@ -61,7 +39,9 @@ export function observeWebpackCompiler(webpackCompiler: webpack.Compiler) {
   }
   const addHook = createAddHook(webpackCompiler)
 
-  // Avoid NodeJS global throw if there's no error listeners
+  /**
+   * NODE JS Global error fix
+   */
   eventEmitter.on('error', () => {})
 
   webpackCompiler.run = wrap(webpackCompiler.run, (run, callback) => {
@@ -89,7 +69,7 @@ export function observeWebpackCompiler(webpackCompiler: webpack.Compiler) {
   })
 
   addHook('done', (stats: webpack.Stats) => {
-    const info = stats.toString(infoType)
+    const info = stats.toString(statsToStringOptions)
 
     if (stats.hasWarnings()) {
       console.log(`${chalk.yellow.bold('Warning:')} ` + info)

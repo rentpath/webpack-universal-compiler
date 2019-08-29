@@ -1,10 +1,10 @@
 import webpack, { Compiler } from 'webpack'
 import assert from 'assert'
 
-import { nodeFs } from '../helpers/node-fs'
+import { observeWebpackCompiler } from './compiler-observer'
 
-import { observeWebpackCompiler } from './simpler-compiler-observer'
-import { wrap } from '../helpers/wrap'
+import { nodeFs } from '../helpers/node-fs'
+import { wrap } from '../helpers/fp-functions'
 
 function preventOriginalAPIDirectUsage(
   compiler: ReturnType<typeof simpleWebpackCompiler>
@@ -69,7 +69,8 @@ export function simpleWebpackCompiler(
       assert(!state.isCompiling, getAssertMessage('Compiler is running'))
     },
 
-    run() {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    run(_args?: any) {
       compiler.assertIdle('run')
 
       return new Promise((resolve, reject) => {
@@ -135,7 +136,8 @@ export function simpleWebpackCompiler(
       }
     },
 
-    unwatch() {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    unwatch(_args?: any) {
       if (!state.webpackWatching) {
         return Promise.resolve()
       }

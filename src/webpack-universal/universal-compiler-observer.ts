@@ -1,6 +1,7 @@
 import chalk from 'chalk'
 import { EventEmitter } from 'events'
-import { simpleWebpackCompiler } from '../webpack/simple-compiler'
+
+import { simpleWebpackCompiler } from '../webpack/compiler'
 
 import { ObserveWebpackIsoCompilerState } from '../types/compiler'
 
@@ -79,6 +80,8 @@ export function observeIsomorphicCompilers(
         error,
         compilation: null
       })
+
+      eventEmitter.emit('error', error)
     } else {
       const compilation = {
         duration: state.beginAt ? Date.now() - state.beginAt : null,
@@ -101,6 +104,9 @@ export function observeIsomorphicCompilers(
     }
   }
 
+  /**
+   * NODE JS Global error fix
+   */
   eventEmitter.on('error', () => {})
 
   clientCompiler

@@ -1,6 +1,9 @@
 import webpack from 'webpack'
-import { simpleWebpackCompiler } from '../webpack/simple-compiler'
-import { clientServerCompiler } from '../webpack-isomorphic/simple-isomorphic-compiler'
+import { simpleWebpackCompiler } from '../webpack/compiler'
+import { clientServerCompiler } from '../webpack-universal/universal-isomorphic-compiler'
+
+/// <reference types="node" />
+/// <reference types="webpack" />
 
 export interface ReporterOptions {
   stats?: boolean | 'once' | undefined
@@ -60,7 +63,7 @@ export interface CompilerStub {
   webpackConfig: webpack.Configuration
 }
 
-export interface ErrStats extends NodeJS.ErrnoException {
+export interface ErrWithStats extends NodeJS.ErrnoException {
   stats: webpack.Stats
 }
 

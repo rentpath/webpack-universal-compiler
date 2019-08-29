@@ -64,6 +64,9 @@ export const pLimit = (concurrency: number) => {
     }
   }
 
+  // @FIXME
+  // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+  // @ts-ignore
   const run = (fn, resolve, ...args) => {
     activeCount++
 
@@ -74,6 +77,9 @@ export const pLimit = (concurrency: number) => {
     result.then(next, next)
   }
 
+  // @FIXME
+  // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+  // @ts-ignore
   const enqueue = (fn, resolve, ...args) => {
     if (activeCount < concurrency) {
       run(fn, resolve, ...args)
@@ -82,6 +88,9 @@ export const pLimit = (concurrency: number) => {
     }
   }
 
+  // @FIXME
+  // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+  // @ts-ignore
   const generator = (fn, ...args) =>
     new Promise(resolve => enqueue(fn, resolve, ...args))
 
@@ -114,4 +123,6 @@ export const pSettle = async <T>(promises: Promise<T>[], options: {} = {}) => {
   if (typeof limit === 'function') {
     return Promise.all(promises.map(item => pReflect(limit(() => item))))
   }
+
+  return TypeError('Something went wrong with pSettle')
 }

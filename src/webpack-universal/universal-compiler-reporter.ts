@@ -1,13 +1,11 @@
 import chalk from 'chalk'
-import { startReportingWebpack } from '../webpack/simple-compiler-reporter'
 import indentString from 'indent-string'
+
 import renderers from '../helpers/renderers'
 import symbols from '../helpers/symbols'
-import {
-  ReporterOptionsIsomorphicCompiler,
-  SimpleCompiler,
-  ReporterOptionsSingleCompiler
-} from '../types/compiler'
+import { startReportingWebpack } from '../webpack/compiler-reporter'
+
+import { ReporterOptionsIsomorphicCompiler } from '../types/compiler'
 
 const extraSymbols = {
   ...symbols,

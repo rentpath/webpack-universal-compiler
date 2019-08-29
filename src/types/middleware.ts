@@ -1,6 +1,8 @@
 import { Compiler, Stats } from 'webpack'
 import { NotifierOptions } from '../utils/os-notifications'
 
+/// <reference types="webpack" />
+
 export interface MiddlewareOptions {
   inMemoryFilesystem?: boolean
   watchDelay?: number

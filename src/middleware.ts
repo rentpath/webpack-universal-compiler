@@ -1,8 +1,8 @@
 import chalk from 'chalk'
 import { Compiler, MultiCompiler, Configuration } from 'webpack'
-import { clientServerCompiler } from './webpack-isomorphic/simple-isomorphic-compiler'
-import { startReportingWebpackIsomorphic } from './webpack-isomorphic/simple-isomorphic-compiler-reporter'
-import { simpleWebpackCompiler } from './webpack/simple-compiler'
+import { clientServerCompiler } from './webpack-universal/universal-isomorphic-compiler'
+import { startReportingWebpackIsomorphic } from './webpack-universal/universal-compiler-reporter'
+import { simpleWebpackCompiler } from './webpack/compiler'
 import { startNotifying } from './utils/os-notifications'
 import { checkHashes } from './utils/check-hashes'
 import { MiddlewareOptions } from './types/middleware'
@@ -122,6 +122,8 @@ function webpackClientServerMiddleware(
   }
 
   options.inMemoryFilesystem && checkHashes(compiler, options)
+
+  compiler.watch()
 }
 
 export {

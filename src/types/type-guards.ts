@@ -1,6 +1,7 @@
 import { Compiler, MultiCompiler, Configuration } from 'webpack'
-
 import { MiddlewareOptions } from './middleware'
+
+/// <reference types="webpack" />
 
 export function isMultiCompiler(compiler?: any): compiler is MultiCompiler {
   if (

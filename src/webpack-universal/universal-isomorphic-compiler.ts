@@ -1,12 +1,14 @@
 import webpack from 'webpack'
-import { simpleWebpackCompiler } from '../webpack/simple-compiler'
+
+import { wrap } from '../helpers/fp-functions'
+import { webpackConfigValidator } from '../helpers/webpack-config-sort'
+import { pSettle } from '../utils/p-utils'
+import { simpleWebpackCompiler } from '../webpack/compiler'
+
 import {
   observeIsomorphicCompilers,
   resetState
-} from './simple-isomorphic-compiler-observer'
-import { pSettle } from '../helpers/p-utils'
-import { wrap } from '../helpers/wrap'
-import { webpackConfigValidator } from '../helpers/webpack-config-sort'
+} from './universal-compiler-observer'
 
 const createSubFacade = (
   compiler: ReturnType<typeof simpleWebpackCompiler>

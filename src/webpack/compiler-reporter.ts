@@ -1,7 +1,7 @@
 import indentString from 'indent-string'
-import { pFinally } from '../helpers/p-utils'
-import { wrap } from '../helpers/wrap'
 
+import { pFinally } from '../utils/p-utils'
+import { wrap } from '../helpers/fp-functions'
 import renderers from '../helpers/renderers'
 
 import {
@@ -85,9 +85,11 @@ export function startReportingWebpack(
   })
 
   compiler
+    .on('error', () => {
+      console.log('WE GOT AN ERROR BOYS')
+    })
     .on('begin', onBegin)
     .on('end', onEnd)
-    .on('error', onError)
     .on('invalidate', onInvalidate)
 
   return {

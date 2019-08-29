@@ -4,7 +4,11 @@ import readPkgUp from 'read-pkg-up'
 import stripAnsi from 'strip-ansi'
 import renderers from '../helpers/renderers'
 
-import { ClientServerCompiler, SimpleCompiler } from '../types/compiler'
+import {
+  ClientServerCompiler,
+  SimpleCompiler,
+  ErrWithStats
+} from '../types/compiler'
 
 export interface NotifierOptions {
   title?: string
@@ -56,7 +60,7 @@ export function startNotifying(
   let lastBuildSucceeded = false
   const notify = createNotifier(options)
 
-  const onError = err => {
+  const onError = (err: ErrWithStats) => {
     lastBuildSucceeded = false
     const message = stripAnsi(renderers.error(err))
 
@@ -67,6 +71,7 @@ export function startNotifying(
     if (!lastBuildSucceeded) {
       lastBuildSucceeded = true
       notify('Build Successful')
+      lastBuildSucceeded = false
     }
   }
 

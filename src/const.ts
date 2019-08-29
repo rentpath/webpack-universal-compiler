@@ -1,0 +1,21 @@
+export const statsToStringOptions = {
+  colors: true,
+  chunks: false,
+  entrypoints: false,
+  assets: false,
+  modules: false,
+  builtAt: false,
+  children: false,
+  cached: false,
+  errors: true,
+  errorDetails: true,
+  hash: false,
+  timings: false,
+  version: false,
+  warnings: true,
+  reasons: false,
+  publicPath: false,
+  performance: false,
+  moduleTrace: true,
+  chunkModules: false
+}

@@ -1,5 +1,5 @@
 import * as fs from 'fs'
-import { Volume, createFsFromVolume } from 'memfs'
+import { Volume } from 'memfs'
 import { Union } from 'unionfs'
 import { patchRequire } from 'fs-monkey'
 import { CompilerStub } from '../types/compiler'
@@ -12,12 +12,12 @@ export function buildInMemoryFileSystem(
 
   client.webpackCompiler.outputFileSystem = {
     ...client.webpackCompiler.outputFileSystem,
-    ...createFsFromVolume(new Volume())
+    ...new Volume()
   }
 
   server.webpackCompiler.outputFileSystem = {
     ...server.webpackCompiler.outputFileSystem,
-    ...createFsFromVolume(new Volume())
+    ...new Volume()
   }
 
   ufs

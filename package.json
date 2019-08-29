@@ -1,13 +1,25 @@
 {
-  "name": "webpack-server-client-middleware",
-  "version": "1.0.0",
+  "name": "webpack-universal-compiler",
+  "version": "1.0.0-alpha.0",
   "main": "lib/middleware.js",
   "author": "Daniil Veremchuk <daniel@verydanny.com>",
   "scripts": {
-    "compile:commonjs": "rm -rf lib && tsc --module commonjs -d -p ./",
-    "compile:es": "rm -rf es && tsc --module es6 --outDir es -p ./",
-    "compile:watch": "rm -rf lib && tsc --declaration --module commonjs -w -p ./",
-    "prepublish": "yarn compile:commonjs"
+    "clean:commonjs": "rm -rf lib && rm -rf es",
+    "clean:es": "rm -rf es",
+    "compile:commonjs": "yarn clean:commonjs && yarn tsc --module commonjs -d -p ./",
+    "compile:es": "yarn clean:es && yarn tsc --module es6 --outDir es -p ./",
+    "compile:watch": "yarn clean:commonjs && yarn tsc --declaration --module commonjs -w -p ./",
+    "compile:es:commonjs": "yarn compile:commonjs && yarn compile:es",
+    "tsc:declarationsOnly": "clean && tsc --declaration --emitDeclarationOnly -p ./"
+  },
+  "files": [
+    "lib",
+    "es",
+    "webpack-logo.png"
+  ],
+  "engines": {
+    "yarn": ">= 1.12.0",
+    "node": ">= 10.9.0"
   },
   "license": "MIT",
   "private": false,
@@ -22,7 +34,11 @@
     "eslint-config-prettier": "^6.1.0",
     "eslint-plugin-prettier": "^3.1.0",
     "prettier": "^1.18.2",
-    "typescript": "^3.5.3"
+    "typescript": "^3.6.2",
+    "yargs": "^14.0.0"
+  },
+  "peerDependencies": {
+    "webpack": ">= 4.15.0"
   },
   "dependencies": {
     "chalk": "^2.4.2",
@@ -37,7 +53,7 @@
     "read-pkg-up": "^6.0.0",
     "strip-ansi": "^5.2.0",
     "unionfs": "^4.2.0",
-    "webpack": "4.39.1",
+    "webpack": "4.39.3",
     "webpack-dev-middleware": "^3.7.0"
   }
 }

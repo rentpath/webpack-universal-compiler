@@ -1,6 +1,7 @@
 {
 	"compilerOptions": {
 		"target": "es2018",
+		"module": "commonjs",
 		"outDir": "lib",
 		"lib": [
 			"es2019"
@@ -13,6 +14,7 @@
 		"noUnusedLocals": true,
 		"noImplicitAny": true,
 		"strictFunctionTypes": false,
+		"skipLibCheck": true,
 		"esModuleInterop": true,
 		"moduleResolution": "node",
 	},

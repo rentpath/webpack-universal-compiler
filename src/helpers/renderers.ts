@@ -3,7 +3,7 @@ import chalk from 'chalk'
 import PrettyError from 'pretty-error'
 import symbols from './symbols'
 
-import { ErrStats } from '../types/compiler'
+import { ErrWithStats } from '../types/compiler'
 
 const prettyError = new PrettyError()
 
@@ -64,7 +64,7 @@ const renderFailure = () => `${chalk.red(symbols.failure)} Compilation failed`
 const renderInvalidate = () =>
   `${chalk.cyan(symbols.invalidate)} Compilation invalidated`
 
-const renderError = (err: ErrStats, statsOptions = defaultStatsOptions) => {
+const renderError = (err: ErrWithStats, statsOptions = defaultStatsOptions) => {
   let str = ''
 
   // If there's stats & compilation errors, then we just render them
