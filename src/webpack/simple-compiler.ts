@@ -50,6 +50,10 @@ export function simpleWebpackCompiler(
       return state.compilation
     },
 
+    getPrettyError() {
+      return state.prettyError
+    },
+
     getError() {
       return state.error
     },
@@ -65,11 +69,15 @@ export function simpleWebpackCompiler(
       assert(!state.isCompiling, getAssertMessage('Compiler is running'))
     },
 
-    run(...args: any) {
+    run() {
       compiler.assertIdle('run')
 
       return new Promise((resolve, reject) => {
         webpackCompiler.run(() => {
+          if (state.prettyError) {
+            reject(state.prettyError)
+          }
+
           if (state.error) {
             reject(state.error)
           } else {

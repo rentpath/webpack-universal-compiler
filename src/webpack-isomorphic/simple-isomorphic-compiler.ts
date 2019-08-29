@@ -6,6 +6,7 @@ import {
 } from './simple-isomorphic-compiler-observer'
 import { pSettle } from '../helpers/p-utils'
 import { wrap } from '../helpers/wrap'
+import { webpackConfigValidator } from '../helpers/webpack-config-sort'
 
 const createSubFacade = (
   compiler: ReturnType<typeof simpleWebpackCompiler>
@@ -18,6 +19,10 @@ export function clientServerCompiler(
   client: webpack.Compiler | webpack.Configuration,
   server: webpack.Compiler | webpack.Configuration
 ) {
+  if (!webpackConfigValidator(client, server)) {
+    throw new TypeError('Incorrect Configuration')
+  }
+
   const clientCompiler = simpleWebpackCompiler(client)
   const serverCompiler = simpleWebpackCompiler(server)
   const { eventEmitter, state } = observeIsomorphicCompilers(
@@ -46,6 +51,10 @@ export function clientServerCompiler(
       serverCompiler.assertIdle('run')
 
       return pSettle([clientCompiler.run(), serverCompiler.run()]).then(() => {
+        if (state.prettyError) {
+          return Promise.reject(state.prettyError)
+        }
+
         if (state.error) {
           throw state.error
         }
@@ -98,7 +107,11 @@ export function clientServerCompiler(
     },
 
     resolve() {
-      const { error, compilation } = state
+      const { error, compilation, prettyError } = state
+
+      if (prettyError) {
+        return Promise.reject(prettyError)
+      }
 
       if (error) {
         return Promise.reject(error)

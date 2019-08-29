@@ -1,7 +1,6 @@
 {
 	"compilerOptions": {
 		"target": "es2018",
-		"module": "commonjs",
 		"outDir": "lib",
 		"lib": [
 			"dom",
@@ -14,14 +13,13 @@
 		"strict": true,
 		"noUnusedLocals": true,
 		"noImplicitAny": true,
-		"skipLibCheck": true,
-		"skipDefaultLibCheck": true,
 		"strictFunctionTypes": false,
 		"esModuleInterop": true,
 		"moduleResolution": "node",
 	},
 	"exclude": [
 		"node_modules",
-    "test",
+		"test",
+		"lib"
 	]
 }

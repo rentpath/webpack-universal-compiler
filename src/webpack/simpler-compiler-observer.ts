@@ -1,9 +1,32 @@
+import chalk from 'chalk'
 import { EventEmitter } from 'events'
 import webpack from 'webpack'
 import { Tapable } from 'tapable'
 
 import { wrap } from '../helpers/wrap'
 import { ObserveWebpackCompilerState } from '../types/compiler'
+
+const infoType = {
+  colors: true,
+  chunks: false,
+  entrypoints: false,
+  assets: false,
+  modules: false,
+  builtAt: false,
+  children: false,
+  cached: false,
+  errors: true,
+  errorDetails: true,
+  hash: false,
+  timings: false,
+  version: false,
+  warnings: true,
+  reasons: false,
+  publicPath: false,
+  performance: false,
+  moduleTrace: true,
+  chunkModules: false
+}
 
 const createAddHook = (webpackCompiler: webpack.Compiler) => <
   Name extends keyof typeof webpackCompiler.hooks
@@ -30,6 +53,7 @@ export function observeWebpackCompiler(webpackCompiler: webpack.Compiler) {
   const state: ObserveWebpackCompilerState = {
     isCompiling: false,
     error: null,
+    prettyError: null,
     compilation: {
       duration: undefined
     },
@@ -44,14 +68,18 @@ export function observeWebpackCompiler(webpackCompiler: webpack.Compiler) {
     Object.assign(state, {
       isCompiling: true,
       error: null,
+      prettyError: null,
       compilation: null
     })
     eventEmitter.emit('begin')
 
     run.call(webpackCompiler, (error, stats) => {
+      const info = stats.toString(infoType)
+
       if (error) {
         Object.assign(state, {
           isCompiling: false,
+          prettyError: info,
           error,
           compilation: null
         })
@@ -63,6 +91,12 @@ export function observeWebpackCompiler(webpackCompiler: webpack.Compiler) {
   })
 
   addHook('done', (stats: webpack.Stats) => {
+    const info = stats.toString(infoType)
+
+    if (stats.hasWarnings()) {
+      console.log(`${chalk.yellow.bold('Warning:')} ` + info)
+    }
+
     if (stats.hasErrors()) {
       const error = Object.assign(new Error('Webpack compilation failed'), {
         stats
@@ -71,6 +105,7 @@ export function observeWebpackCompiler(webpackCompiler: webpack.Compiler) {
       Object.assign(state, {
         isCompiling: false,
         error,
+        prettyError: info,
         compilation: null
       })
 

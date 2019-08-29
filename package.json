@@ -6,7 +6,7 @@
   "scripts": {
     "compile:commonjs": "rm -rf lib && tsc --module commonjs -d -p ./",
     "compile:es": "rm -rf es && tsc --module es6 --outDir es -p ./",
-    "compile:watch": "rm -rf lib && tsc --incremental --module commonjs -w -p ./",
+    "compile:watch": "rm -rf lib && tsc --declaration --module commonjs -w -p ./",
     "prepublish": "yarn compile:commonjs"
   },
   "license": "MIT",
@@ -26,9 +26,13 @@
   "dependencies": {
     "chalk": "^2.4.2",
     "figures": "^3.0.0",
+    "fs-monkey": "^0.3.3",
     "indent-string": "^4.0.0",
+    "memfs": "^2.15.5",
+    "memory-fs": "^0.4.1",
     "mkdirp": "^0.5.1",
     "pretty-error": "^2.1.1",
+    "unionfs": "^4.2.0",
     "webpack": "4.39.1",
     "webpack-dev-middleware": "^3.7.0"
   }

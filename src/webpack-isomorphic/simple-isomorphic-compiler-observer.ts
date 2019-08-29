@@ -1,3 +1,4 @@
+import chalk from 'chalk'
 import { EventEmitter } from 'events'
 import { simpleWebpackCompiler } from '../webpack/simple-compiler'
 
@@ -10,6 +11,7 @@ export const resetState = (state = {}) => {
     isCompiling: false,
     beginAt: null,
     error: null,
+    prettyError: null,
     compilation: {
       stats: undefined,
       duration: undefined
@@ -32,6 +34,7 @@ export function observeIsomorphicCompilers(
       isCompiling: true,
       beginAt: Date.now(),
       error: null,
+      prettyError: false,
       compilation: null
     })
     eventEmitter.emit('begin')
@@ -47,7 +50,28 @@ export function observeIsomorphicCompilers(
       return
     }
 
+    let prettyError
+
+    if (clientCompiler.getPrettyError() && serverCompiler.getPrettyError()) {
+      prettyError =
+        '\n' +
+        chalk.bgRed.whiteBright.bold('CLIENT: ') +
+        clientCompiler.getPrettyError() +
+        '\n' +
+        '\n' +
+        chalk.bgRed.whiteBright.bold('SERVER: ') +
+        serverCompiler.getPrettyError() +
+        '\n'
+    }
     const error = clientCompiler.getError() || serverCompiler.getError()
+
+    if (prettyError) {
+      Object.assign(state, {
+        isCompiling: false,
+        prettyError,
+        compilation: null
+      })
+    }
 
     if (error) {
       Object.assign(state, {
