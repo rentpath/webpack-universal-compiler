@@ -98,9 +98,12 @@ export function devMiddleware(
 
   return compose([
     (_req: Request, res: Response, next: NextFunction) => {
-      const { clientStats } = res.locals.universal.compilation
+      if (res.locals.universal && res.locals.universal.compilation) {
+        const { clientStats } = res.locals.universal.compilation
 
-      notifyDone(clientStats)
+        notifyDone(clientStats)
+      }
+
       next()
     },
     devMiddleware

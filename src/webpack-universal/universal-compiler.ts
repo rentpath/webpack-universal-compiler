@@ -119,12 +119,9 @@ export function clientServerCompiler(
     resolve(): Promise<ObserveWebpackIsoCompilerState['compilation']> {
       const { error, compilation, prettyError } = state
 
-      if (prettyError) {
-        return Promise.reject(prettyError)
-      }
-
       if (error) {
-        return Promise.reject(error)
+        Promise.reject(error)
+        resetState(state)
       }
 
       if (compilation && compilation.clientStats && compilation.serverStats) {
@@ -147,6 +144,7 @@ export function clientServerCompiler(
       const cleanup = () => {
         eventEmitter.removeListener('error', onError)
         eventEmitter.removeListener('end', onEnd)
+        resetState(state)
       }
 
       const onError = (err: ErrWithStats) => {

@@ -113,17 +113,20 @@ export function resolveCompilation(
   let promise: any
 
   return () =>
-    compiler.resolve().then(compilation => {
-      if (promise && promise.compilation === compilation) {
+    compiler
+      .resolve()
+      .then(compilation => {
+        if (promise && promise.compilation === compilation) {
+          return promise
+        }
+
+        promise = pProps({
+          compilation,
+          bundle: loadExports(compiler, options)
+        })
+        promise.compilation = compilation
+
         return promise
-      }
-
-      promise = pProps({
-        compilation,
-        bundle: loadExports(compiler, options)
       })
-      promise.compilation = compilation
-
-      return promise
-    })
+      .catch(e => console.log(e))
 }
