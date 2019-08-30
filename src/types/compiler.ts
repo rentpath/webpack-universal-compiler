@@ -1,6 +1,6 @@
 import webpack from 'webpack'
 import { simpleWebpackCompiler } from '../webpack/compiler'
-import { clientServerCompiler } from '../webpack-universal/universal-isomorphic-compiler'
+import { clientServerCompiler } from '../webpack-universal/universal-compiler'
 
 /// <reference types="node" />
 /// <reference types="webpack" />

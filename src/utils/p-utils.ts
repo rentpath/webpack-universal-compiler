@@ -1,3 +1,5 @@
+import AggregateError from 'aggregate-error'
+
 export async function pFinally<T>(
   promise: Promise<T>,
   onFinally: () => void = () => {}
@@ -125,4 +127,168 @@ export const pSettle = async <T>(promises: Promise<T>[], options: {} = {}) => {
   }
 
   return TypeError('Something went wrong with pSettle')
+}
+
+export const pMap = async (
+  // @FIXME
+  // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+  // @ts-ignore
+  iterable,
+  // @FIXME
+  // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+  // @ts-ignore
+  mapper,
+  { concurrency = Infinity, stopOnError = true } = {}
+) => {
+  return new Promise((resolve, reject) => {
+    if (typeof mapper !== 'function') {
+      throw new TypeError('Mapper function is required')
+    }
+
+    if (!(typeof concurrency === 'number' && concurrency >= 1)) {
+      throw new TypeError(
+        `Expected \`concurrency\` to be a number from 1 and up, got \`${concurrency}\` (${typeof concurrency})`
+      )
+    }
+
+    // @FIXME
+    // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+    // @ts-ignore
+    const ret = []
+
+    // @FIXME
+    // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+    // @ts-ignore
+    const errors = []
+    const iterator = iterable[Symbol.iterator]()
+    let isRejected = false
+    let isIterableDone = false
+    let resolvingCount = 0
+    let currentIndex = 0
+
+    const next = () => {
+      if (isRejected) {
+        return
+      }
+
+      const nextItem = iterator.next()
+      const i = currentIndex
+      currentIndex++
+
+      if (nextItem.done) {
+        isIterableDone = true
+
+        if (resolvingCount === 0) {
+          if (!stopOnError && errors.length !== 0) {
+            // @FIXME
+            // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+            // @ts-ignore
+            reject(new AggregateError(errors))
+          } else {
+            // @FIXME
+            // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+            // @ts-ignore
+            resolve(ret)
+          }
+        }
+
+        return
+      }
+
+      resolvingCount++
+      ;(async () => {
+        try {
+          const element = await nextItem.value
+          ret[i] = await mapper(element, i)
+          resolvingCount--
+          next()
+        } catch (error) {
+          if (stopOnError) {
+            isRejected = true
+            reject(error)
+          } else {
+            errors.push(error)
+            resolvingCount--
+            next()
+          }
+        }
+      })()
+    }
+
+    for (let i = 0; i < concurrency; i++) {
+      next()
+
+      if (isIterableDone) {
+        break
+      }
+    }
+  })
+}
+
+// @FIXME
+// eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+// @ts-ignore
+const map = async (map, mapper, options) => {
+  const awaitedEntries = [...map.entries()].map(async ([key, value]) => [
+    key,
+    await value
+  ])
+  const values = await pMap(
+    awaitedEntries,
+    // @FIXME
+    // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+    // @ts-ignore
+    ([key, value]) => mapper(value, key),
+    options
+  )
+  const result = new Map()
+
+  for (const [index, key] of [...map.keys()].entries()) {
+    // @FIXME
+    // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+    // @ts-ignore
+    result.set(key, values[index])
+  }
+
+  return result
+}
+
+// @FIXME
+// eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+// @ts-ignore
+const object = async (map, mapper, options) => {
+  const awaitedEntries = Object.entries(map).map(async ([key, value]) => [
+    key,
+    await value
+  ])
+  const values = await pMap(
+    awaitedEntries,
+    // @FIXME
+    // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+    // @ts-ignore
+    ([key, value]) => mapper(value, key),
+    options
+  )
+  const result = {}
+
+  // @FIXME
+  // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+  // @ts-ignore
+  for (const [index, key] of Object.keys(map).entries()) {
+    // @FIXME
+    // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+    // @ts-ignore
+    result[key] = values[index]
+  }
+
+  return result
+}
+
+// @FIXME
+// eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+// @ts-ignore
+export const pProps = (input, mapper? = value => value, options?) => {
+  return input instanceof Map
+    ? map(input, mapper, options)
+    : object(input, mapper, options)
 }

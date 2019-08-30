@@ -1,8 +1,12 @@
 import chalk from 'chalk'
 import { Compiler, MultiCompiler, Configuration } from 'webpack'
-import { clientServerCompiler } from './webpack-universal/universal-isomorphic-compiler'
+import { compose } from 'compose-middleware'
+import { compilationMiddleware } from './middleware/compilation-middleware'
+import { devMiddleware } from './middleware/dev-middleware'
+import { clientServerCompiler } from './webpack-universal/universal-compiler'
 import { startReportingWebpackIsomorphic } from './webpack-universal/universal-compiler-reporter'
 import { simpleWebpackCompiler } from './webpack/compiler'
+import {} from './middleware'
 import { startNotifying } from './utils/os-notifications'
 import { checkHashes } from './utils/check-hashes'
 import { MiddlewareOptions } from './types/middleware'
@@ -14,7 +18,6 @@ import {
   isSingleConfiguration
 } from './types/type-guards'
 import { buildInMemoryFileSystem } from './utils/build-filesystem'
-
 import { NotifierOptions } from './utils/os-notifications'
 
 function parseOptions(options: MiddlewareOptions) {
@@ -123,7 +126,14 @@ function webpackClientServerMiddleware(
 
   options.inMemoryFilesystem && checkHashes(compiler, options)
 
+  const middleware = compose([
+    compilationMiddleware(compiler, options),
+    devMiddleware(compiler, options)
+  ])
+
   compiler.watch()
+
+  return middleware
 }
 
 export {

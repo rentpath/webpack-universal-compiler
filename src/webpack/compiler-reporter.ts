@@ -85,9 +85,7 @@ export function startReportingWebpack(
   })
 
   compiler
-    .on('error', () => {
-      console.log('WE GOT AN ERROR BOYS')
-    })
+    .on('error', onError)
     .on('begin', onBegin)
     .on('end', onEnd)
     .on('invalidate', onInvalidate)

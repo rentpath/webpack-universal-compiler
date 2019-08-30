@@ -9,6 +9,7 @@ import {
   observeIsomorphicCompilers,
   resetState
 } from './universal-compiler-observer'
+import { ObserveWebpackIsoCompilerState, ErrWithStats } from '../types/compiler'
 
 const createSubFacade = (
   compiler: ReturnType<typeof simpleWebpackCompiler>
@@ -115,7 +116,7 @@ export function clientServerCompiler(
       ]).then(() => {})
     },
 
-    resolve() {
+    resolve(): Promise<ObserveWebpackIsoCompilerState['compilation']> {
       const { error, compilation, prettyError } = state
 
       if (prettyError) {
@@ -126,7 +127,7 @@ export function clientServerCompiler(
         return Promise.reject(error)
       }
 
-      if (compilation) {
+      if (compilation && compilation.clientStats && compilation.serverStats) {
         return Promise.resolve(compilation)
       }
 
@@ -148,7 +149,7 @@ export function clientServerCompiler(
         eventEmitter.removeListener('end', onEnd)
       }
 
-      const onError = (err: webpack.Stats) => {
+      const onError = (err: ErrWithStats) => {
         cleanup()
 
         if (deferred.reject) {
@@ -156,11 +157,15 @@ export function clientServerCompiler(
         }
       }
 
-      const onEnd = (compilation: webpack.Stats) => {
+      const onEnd = (
+        compilation: ObserveWebpackIsoCompilerState['compilation']
+      ) => {
         cleanup()
 
         if (deferred.resolve) {
-          deferred.resolve(compilation)
+          if (compilation.clientStats && compilation.serverStats) {
+            deferred.resolve(compilation)
+          }
         }
       }
 

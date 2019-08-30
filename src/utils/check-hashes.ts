@@ -63,7 +63,7 @@ function verifyAssets(compilation: CompilationStats, options: Reporter) {
 
   str = `${chalk.yellow(
     'WARN'
-  )}: Assets with an hash in its name were detected on the `
+  )}: Assets with a hash in its name were detected on the `
   str += `${types.map(type => chalk.bold(type)).join(' and ')}:\n`
 
   assets.forEach(asset => {
@@ -77,7 +77,7 @@ This is known to cause ${chalk.bold('memory leaks')} with ${chalk.bold(
 You should avoid using ${chalk.bold('[hash]')} in ${configProperties.join(
     ', '
   )} as well as similar options in loaders & plugins.
-Alternatively, you may set \`memoryFs\` to false altough it will still create many files in the output folder.
+Alternatively, you may set \`inMemoryFilesystem\` to false altough it will still create many files in the output folder.
 If you feel this was a false positive, please ignore this warning.
 `
 
