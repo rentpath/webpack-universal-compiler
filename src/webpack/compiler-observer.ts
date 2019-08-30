@@ -20,9 +20,10 @@ const createAddHook = (webpackCompiler: webpack.Compiler) => <
   }
 
   if (webpackCompiler.hooks) {
-    webpackCompiler.hooks[name][method]('simple-compiler', (...args) =>
-      (callback as Tapable.Handler)(...args)
-    )
+    webpackCompiler.hooks[name][method]('simple-compiler', (...args) => {
+      console.log(name, method)
+      return (callback as Tapable.Handler)(...args)
+    })
   }
 }
 

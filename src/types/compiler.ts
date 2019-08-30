@@ -39,7 +39,7 @@ export interface ReporterOptionsIsomorphicCompiler
 
 export interface ObserveWebpackCompilerState {
   isCompiling: boolean
-  error: null | Error
+  error: null | ErrWithStats
   prettyError: null | string
   compilation: {
     duration?: number
@@ -53,6 +53,10 @@ export interface ObserveWebpackIsoCompilerState
   beginAt: null | ReturnType<typeof Date.now>
   compilation: {
     duration?: number
+    clientStats?: webpack.Stats
+    serverStats?: webpack.Stats
+  }
+  lastStats: {
     clientStats?: webpack.Stats
     serverStats?: webpack.Stats
   }

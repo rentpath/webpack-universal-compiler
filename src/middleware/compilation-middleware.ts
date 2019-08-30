@@ -16,5 +16,6 @@ export function compilationMiddleware(
         res.locals.universal = compilation
       })
       .then(next, next)
+      .catch(e => console.log(e))
   }
 }

@@ -117,11 +117,19 @@ export function clientServerCompiler(
     },
 
     resolve(): Promise<ObserveWebpackIsoCompilerState['compilation']> {
-      const { error, compilation, prettyError } = state
+      const { error, compilation, prettyError, lastStats } = state
 
       if (error) {
-        Promise.reject(error)
-        resetState(state)
+        if (lastStats.serverStats && lastStats.clientStats) {
+          const { clientStats, serverStats } = lastStats
+
+          return Promise.resolve({
+            duration: 0,
+            clientStats,
+            serverStats
+          })
+        }
+        return Promise.reject(error)
       }
 
       if (compilation && compilation.clientStats && compilation.serverStats) {

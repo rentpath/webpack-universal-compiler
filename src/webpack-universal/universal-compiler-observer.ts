@@ -12,6 +12,10 @@ export const resetState = (state = {}) => {
     isCompiling: false,
     beginAt: null,
     error: null,
+    lastStats: {
+      clientStats: undefined,
+      serverStats: undefined
+    },
     prettyError: null,
     compilation: {
       stats: undefined,
@@ -36,7 +40,8 @@ export function observeIsomorphicCompilers(
       beginAt: Date.now(),
       error: null,
       prettyError: false,
-      compilation: null
+      compilation: null,
+      lastStats: null
     })
     eventEmitter.emit('begin')
   }
@@ -65,6 +70,8 @@ export function observeIsomorphicCompilers(
         '\n'
     }
     const error = clientCompiler.getError() || serverCompiler.getError()
+    const clientErrors = clientCompiler.getError()
+    const serverErrors = serverCompiler.getError()
 
     if (prettyError) {
       Object.assign(state, {
@@ -78,7 +85,13 @@ export function observeIsomorphicCompilers(
       Object.assign(state, {
         isCompiling: false,
         error,
-        compilation: null
+        compilation: null,
+        lastStats: {
+          clientStats:
+            clientErrors && clientErrors.stats ? clientErrors.stats : undefined,
+          serverErrors:
+            serverErrors && serverErrors.stats ? serverErrors.stats : undefined
+        }
       })
 
       eventEmitter.emit('error', error)
