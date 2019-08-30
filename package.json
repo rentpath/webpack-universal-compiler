@@ -30,6 +30,7 @@
     "@types/node-notifier": "^5.4.0",
     "@types/webpack": "^4.39.1",
     "@types/webpack-dev-middleware": "^2.0.3",
+    "@types/webpack-hot-middleware": "^2.16.5",
     "@typescript-eslint/eslint-plugin": "^2.0.0",
     "@typescript-eslint/parser": "^2.0.0",
     "eslint": "^6.2.1",
@@ -60,6 +61,7 @@
     "strip-ansi": "^5.2.0",
     "unionfs": "^4.2.0",
     "webpack": "4.39.3",
-    "webpack-dev-middleware": "^3.7.0"
+    "webpack-dev-middleware": "^3.7.0",
+    "webpack-hot-middleware": "^2.25.0"
   }
 }

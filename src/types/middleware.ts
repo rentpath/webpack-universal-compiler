@@ -10,6 +10,7 @@ export interface MiddlewareOptions {
   report?: {
     stats?: boolean | 'once'
   }
+  hot?: boolean
   notify?: boolean | NotifierOptions
   headers?: {
     [x: string]: string
