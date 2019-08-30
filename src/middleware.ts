@@ -140,7 +140,7 @@ function webpackClientServerMiddleware(
 
   compiler.watch()
 
-  return middleware
+  return compose(middleware)
 }
 
 export {
