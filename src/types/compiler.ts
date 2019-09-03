@@ -40,7 +40,6 @@ export interface ReporterOptionsIsomorphicCompiler
 export interface ObserveWebpackCompilerState {
   isCompiling: boolean
   error: null | ErrWithStats
-  prettyError: null | string
   compilation: {
     duration?: number
     stats?: webpack.Stats

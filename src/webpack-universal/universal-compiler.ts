@@ -54,10 +54,6 @@ export function clientServerCompiler(
       serverCompiler.assertIdle('run')
 
       return pSettle([clientCompiler.run(), serverCompiler.run()]).then(() => {
-        if (state.prettyError) {
-          return Promise.reject(state.prettyError)
-        }
-
         if (state.error) {
           throw state.error
         }

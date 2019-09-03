@@ -32,7 +32,6 @@ export function observeWebpackCompiler(webpackCompiler: webpack.Compiler) {
   const state: ObserveWebpackCompilerState = {
     isCompiling: false,
     error: null,
-    prettyError: null,
     compilation: {
       duration: undefined
     },
@@ -49,7 +48,6 @@ export function observeWebpackCompiler(webpackCompiler: webpack.Compiler) {
     Object.assign(state, {
       isCompiling: true,
       error: null,
-      prettyError: null,
       compilation: null
     })
     eventEmitter.emit('begin')
@@ -58,7 +56,6 @@ export function observeWebpackCompiler(webpackCompiler: webpack.Compiler) {
       if (error) {
         Object.assign(state, {
           isCompiling: false,
-          prettyError: null,
           error,
           compilation: null
         })
@@ -84,7 +81,6 @@ export function observeWebpackCompiler(webpackCompiler: webpack.Compiler) {
       Object.assign(state, {
         isCompiling: false,
         error,
-        prettyError: info,
         compilation: null
       })
 

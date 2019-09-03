@@ -16,7 +16,6 @@ export const resetState = (state = {}) => {
       clientStats: undefined,
       serverStats: undefined
     },
-    prettyError: null,
     compilation: {
       stats: undefined,
       duration: undefined
@@ -39,7 +38,6 @@ export function observeIsomorphicCompilers(
       isCompiling: true,
       beginAt: Date.now(),
       error: null,
-      prettyError: false,
       compilation: null,
       lastStats: null
     })
@@ -56,35 +54,29 @@ export function observeIsomorphicCompilers(
       return
     }
 
-    let prettyError
+    const clientErrors = clientCompiler.getError()
+    const serverErrors = serverCompiler.getError()
+    const bothError = clientErrors && serverErrors
+    const eitherError = clientErrors || serverErrors
 
-    if (clientCompiler.getPrettyError() && serverCompiler.getPrettyError()) {
-      prettyError =
-        '\n' +
+    if (bothError) {
+      const bothPrettyError =
+        '\n\n' +
         chalk.bgRed.whiteBright.bold('CLIENT: ') +
-        clientCompiler.getPrettyError() +
+        clientErrors +
         '\n' +
         '\n' +
         chalk.bgRed.whiteBright.bold('SERVER: ') +
-        serverCompiler.getPrettyError() +
+        serverErrors +
         '\n'
-    }
-    const error = clientCompiler.getError() || serverCompiler.getError()
-    const clientErrors = clientCompiler.getError()
-    const serverErrors = serverCompiler.getError()
 
-    if (prettyError) {
-      Object.assign(state, {
-        isCompiling: false,
-        prettyError,
-        compilation: null
-      })
+      console.log(bothPrettyError)
     }
 
-    if (error) {
+    if (eitherError) {
       Object.assign(state, {
         isCompiling: false,
-        error,
+        eitherError,
         compilation: null,
         lastStats: {
           clientStats:
