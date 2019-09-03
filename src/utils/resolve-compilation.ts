@@ -121,6 +121,7 @@ export function resolveCompilation(
         }
 
         promise = pProps({
+          // @ts-ignore
           compilation,
           bundle: loadExports(compiler, options)
         })

@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express'
-import { Compiler, OutputFileSystem } from 'webpack'
+import { Compiler, OutputFileSystem, Stats } from 'webpack'
 import { compose } from 'compose-middleware'
 import webpackDevMiddleware, {
   WebpackDevMiddleware
@@ -8,10 +8,12 @@ import webpackDevMiddleware, {
 import { MiddlewareOptions } from '../types/middleware'
 import { ClientServerCompiler } from '../types/compiler'
 
+type HandlerFunc = (stats: Stats) => void
+
 function createStubbedWebpackCompiler(webpackCompiler: Compiler) {
   // Make `run` and `watch` no-ops
   // Additionally, we don't want the dev-middleware to be notified of anything, except for the `done` hook
-  const doneHandlers = []
+  const doneHandlers: ((stats: Stats) => void)[] = []
 
   const stubbedWebpackCompilerHooks = new Proxy(
     {},
@@ -19,7 +21,8 @@ function createStubbedWebpackCompiler(webpackCompiler: Compiler) {
       get(target, property) {
         if (property === 'done') {
           return {
-            tap: (name, handler) => doneHandlers.push(handler)
+            tap: (name: string, handler: HandlerFunc) =>
+              doneHandlers.push(handler)
           }
         }
 
@@ -45,7 +48,7 @@ function createStubbedWebpackCompiler(webpackCompiler: Compiler) {
         return stubbedWebpackCompilerHooks
       }
 
-      return target[property]
+      return target[property as keyof Compiler]
     },
     set() {
       // Do not modify any property of the compiler, specially the `outputFileSystem`
@@ -55,7 +58,7 @@ function createStubbedWebpackCompiler(webpackCompiler: Compiler) {
 
   return {
     stubbedWebpackCompiler,
-    notifyDone: stats => doneHandlers.forEach(handler => handler(stats))
+    notifyDone: (stats: Stats) => doneHandlers.forEach(handler => handler(stats))
   }
 }
 

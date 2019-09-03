@@ -1,7 +1,8 @@
+/* eslint-disable @typescript-eslint/ban-ts-ignore */
 import AggregateError from 'aggregate-error'
 
 export async function pFinally<T>(
-  promise: Promise<T>,
+  promise: Promise<T> | (() => Promise<T>),
   onFinally: () => void = () => {}
 ) {
   let value
@@ -34,7 +35,10 @@ export const pReflect = async <T>(promise: Promise<T>) => {
   }
 }
 
-export const pTry = <T extends any[]>(fn: (...args: T) => any, ...args: any) =>
+export const pTry = <TArgs, TResult>(
+  fn: (...args: TArgs[]) => TResult,
+  ...args: TArgs[]
+) =>
   new Promise(resolve => {
     resolve(fn(...args))
   })
@@ -66,10 +70,11 @@ export const pLimit = (concurrency: number) => {
     }
   }
 
-  // @FIXME
-  // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-  // @ts-ignore
-  const run = (fn, resolve, ...args) => {
+  const run = <T, TArgs extends any[]>(
+    fn: () => Promise<T>,
+    resolve: <T>(value?: Promise<T>) => void,
+    ...args: TArgs
+  ) => {
     activeCount++
 
     const result = pTry(fn, ...args)
@@ -79,10 +84,11 @@ export const pLimit = (concurrency: number) => {
     result.then(next, next)
   }
 
-  // @FIXME
-  // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-  // @ts-ignore
-  const enqueue = (fn, resolve, ...args) => {
+  const enqueue = <T, TArgs extends any[]>(
+    fn: () => Promise<T>,
+    resolve: <T>(value?: Promise<T>) => void,
+    ...args: TArgs
+  ) => {
     if (activeCount < concurrency) {
       run(fn, resolve, ...args)
     } else {
@@ -90,11 +96,10 @@ export const pLimit = (concurrency: number) => {
     }
   }
 
-  // @FIXME
-  // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-  // @ts-ignore
-  const generator = (fn, ...args) =>
-    new Promise(resolve => enqueue(fn, resolve, ...args))
+  const generator = <T, TArgs extends any[]>(
+    fn: () => Promise<T>,
+    ...args: TArgs
+  ) => new Promise(resolve => enqueue(fn, resolve, ...args))
 
   Object.defineProperties(generator, {
     activeCount: {
@@ -129,17 +134,16 @@ export const pSettle = async <T>(promises: Promise<T>[], options: {} = {}) => {
   return TypeError('Something went wrong with pSettle')
 }
 
-export const pMap = async (
-  // @FIXME
-  // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-  // @ts-ignore
-  iterable,
-  // @FIXME
-  // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-  // @ts-ignore
-  mapper,
+type TheMapper<Element = any, NewElement = any> = (
+  element: Element,
+  index: number
+) => NewElement | PromiseLike<NewElement>
+
+export const pMap = async <T, NewT>(
+  iterable: Iterable<T>,
+  mapper: TheMapper<T, NewT>,
   { concurrency = Infinity, stopOnError = true } = {}
-) => {
+): Promise<NewT[]> => {
   return new Promise((resolve, reject) => {
     if (typeof mapper !== 'function') {
       throw new TypeError('Mapper function is required')
@@ -151,15 +155,8 @@ export const pMap = async (
       )
     }
 
-    // @FIXME
-    // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-    // @ts-ignore
-    const ret = []
-
-    // @FIXME
-    // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-    // @ts-ignore
-    const errors = []
+    const ret: NewT[] = []
+    const errors: Error[] = []
     const iterator = iterable[Symbol.iterator]()
     let isRejected = false
     let isIterableDone = false
@@ -180,14 +177,8 @@ export const pMap = async (
 
         if (resolvingCount === 0) {
           if (!stopOnError && errors.length !== 0) {
-            // @FIXME
-            // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-            // @ts-ignore
             reject(new AggregateError(errors))
           } else {
-            // @FIXME
-            // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-            // @ts-ignore
             resolve(ret)
           }
         }
@@ -225,58 +216,30 @@ export const pMap = async (
   })
 }
 
-// @FIXME
-// eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-// @ts-ignore
-const map = async (map, mapper, options) => {
-  const awaitedEntries = [...map.entries()].map(async ([key, value]) => [
-    key,
-    await value
-  ])
-  const values = await pMap(
-    awaitedEntries,
-    // @FIXME
-    // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-    // @ts-ignore
-    ([key, value]) => mapper(value, key),
-    options
-  )
-  const result = new Map()
-
-  for (const [index, key] of [...map.keys()].entries()) {
-    // @FIXME
-    // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-    // @ts-ignore
-    result.set(key, values[index])
-  }
-
-  return result
+type IterableObject<T> = { [K in keyof T]: T[K] } & {
+  [Symbol.iterator](): Iterator<T>
 }
 
-// @FIXME
-// eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-// @ts-ignore
-const object = async (map, mapper, options) => {
-  const awaitedEntries = Object.entries(map).map(async ([key, value]) => [
-    key,
-    await value
-  ])
+const object = async <
+  InputType extends { [key: string]: any },
+  ValueType extends InputType[keyof InputType],
+  MappedValueType = PromiseResult<ValueType>
+>(
+  map: InputType,
+  mapper: Mapper<PromiseResult<ValueType>, ValueType, MappedValueType>,
+  options?: PMapOptions
+) => {
+  const awaitedEntries: IterableObject<any> = Object.entries(map).map(
+    async ([key, value]) => [key, await value]
+  )
   const values = await pMap(
     awaitedEntries,
-    // @FIXME
-    // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-    // @ts-ignore
     ([key, value]) => mapper(value, key),
     options
   )
   const result = {}
 
-  // @FIXME
-  // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-  // @ts-ignore
   for (const [index, key] of Object.keys(map).entries()) {
-    // @FIXME
-    // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
     // @ts-ignore
     result[key] = values[index]
   }
@@ -284,11 +247,70 @@ const object = async (map, mapper, options) => {
   return result
 }
 
-// @FIXME
-// eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-// @ts-ignore
-export const pProps = (input, mapper? = value => value, options?) => {
-  return input instanceof Map
-    ? map(input, mapper, options)
-    : object(input, mapper, options)
+const mapAMap = async <
+  KeyType,
+  ValueType,
+  MappedValueType = PromiseResult<ValueType>
+>(
+  map: Map<KeyType, ValueType>,
+  mapper: Mapper<PromiseResult<ValueType>, KeyType, MappedValueType>,
+  options?: PMapOptions
+) => {
+  const awaitedEntries: IterableObject<any> = [...map.entries()].map(
+    async ([key, value]) => [key, await value]
+  )
+  const values = await pMap(
+    awaitedEntries,
+    ([key, value]) => mapper(value, key),
+    options
+  )
+  const result = new Map()
+
+  for (const [index, key] of [...map.keys()].entries()) {
+    result.set(key, values[index])
+  }
+
+  return result
+}
+
+interface PMapOptions {
+  concurrency?: number
+  stopOnError?: boolean
+}
+
+type PromiseResult<Value> = Value extends PromiseLike<infer Result>
+  ? Result
+  : Value
+
+type Mapper<ValueType, KeyType, MappedValueType> = (
+  value: ValueType,
+  key: KeyType
+) => MappedValueType | PromiseLike<MappedValueType>
+
+type BlankMapper<ValueType> = (value: ValueType) => ValueType
+
+export function pProps<
+  KeyType,
+  ValueType,
+  MappedValueType = PromiseResult<ValueType>
+>(
+  map: Map<KeyType, ValueType>,
+  mapper?: Mapper<PromiseResult<ValueType>, KeyType, MappedValueType>,
+  options?: PMapOptions
+): Promise<Map<KeyType, MappedValueType>>
+export function pProps<
+  InputType extends { [key: string]: any },
+  ValueType extends InputType[keyof InputType],
+  MappedValueType = PromiseResult<ValueType>
+>(
+  map: InputType,
+  mapper:
+    | Mapper<PromiseResult<ValueType>, keyof InputType, MappedValueType>
+    | BlankMapper<PromiseResult<ValueType>> = (value: any) => value,
+  options?: PMapOptions
+): Promise<{ [key in keyof InputType]: MappedValueType }> {
+  // @ts-ignore
+  return map instanceof Map
+    ? mapAMap(map, mapper, options)
+    : object(map, mapper, options)
 }
