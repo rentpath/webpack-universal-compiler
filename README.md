@@ -10,12 +10,12 @@ Webpack Universal Compiler is still at alpha so use with caution. It should be j
 
 **Yarn**
 ```
-yarn webpack-universal-compiler@alpha -D
+yarn webpack-universal-compiler -D
 ```
 
 **NPM**
 ```
-npm install webpack-universal-compiler@alpha --save-dev
+npm install webpack-universal-compiler --save-dev
 ```
 
 ## Prerequisites
