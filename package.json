@@ -1,6 +1,6 @@
 {
   "name": "webpack-universal-compiler",
-  "version": "1.0.0-alpha.5",
+  "version": "1.0.1",
   "main": "lib/middleware.js",
   "author": "Daniil Veremchuk <daniel@verydanny.com>",
   "scripts": {
