@@ -78,7 +78,7 @@ app.use((req,, res, next) => {
     // This is the middleware export from `src/server/entry.ts
     const { middleware } = res.locals.universal.bundle
 
-    return comose(middleware)(req, res, next)
+    return compose(middleware)(req, res, next)
   }
 
   return next()
