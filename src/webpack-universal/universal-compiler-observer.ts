@@ -86,7 +86,7 @@ export function observeIsomorphicCompilers(
         }
       })
 
-      eventEmitter.emit('error', error)
+      eventEmitter.emit('error', eitherError)
     } else {
       const compilation = {
         duration: state.beginAt ? Date.now() - state.beginAt : null,
