@@ -1,0 +1,36 @@
+import fs from 'fs'
+import { ufs } from 'unionfs'
+import { vol, Volume } from 'memfs'
+import { patchFs } from 'fs-monkey'
+
+//back up original 'fs'
+const ofs = { ...fs }
+const vol1 = new Volume()
+const vol2 = new Volume()
+
+vol1.fromJSON(
+  {
+    './dummy_WEBPACK_UNIVERSAL_COMPILER.txt': 'Hello World' // without at least 1 entry, it doesn't work - why??
+  },
+  '/virtual/'
+)
+
+vol2.fromJSON(
+  {
+    './dummy_WEBPACK_UNIVERSAL_COMPILER.txt': 'Hello World' // without at least 1 entry, it doesn't work - why??
+  },
+  '/virtual/'
+)
+
+ufs
+  .use(vol1)
+  .use(vol2)
+  .use(ofs) // <-- this is the crucial part!
+patchFs(ufs)
+
+fs.writeFileSync('./hello.txt', 'Are you there?') // This writes a real file in the current dir
+fs.writeFileSync('/virtual/hello.txt', "You're in the matrix!") // this writes a virtual file into memory
+
+// we can read back both with "fs":
+console.log(fs.readFileSync('./hello.txt', 'utf8'))
+console.log(fs.readFileSync('/virtual/hello.txt', 'utf8'))

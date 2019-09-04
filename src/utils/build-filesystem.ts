@@ -1,15 +1,15 @@
-import * as fs from 'fs'
+import fs from 'fs'
 import { Volume, createFsFromVolume } from 'memfs'
-import { Union } from 'unionfs'
-import { patchRequire } from 'fs-monkey'
 import { CompilerStub } from '../types/compiler'
+
+const ofs = {
+  ...fs
+}
 
 export function buildInMemoryFileSystem(
   client: CompilerStub,
   server: CompilerStub
 ) {
-  const ufs = new Union()
-
   const newClientFilesystem = {
     ...client.webpackCompiler.outputFileSystem,
     ...createFsFromVolume(new Volume())
@@ -22,11 +22,4 @@ export function buildInMemoryFileSystem(
 
   client.webpackCompiler.outputFileSystem = newClientFilesystem
   server.webpackCompiler.outputFileSystem = newServerFilesystem
-
-  ufs
-    .use(client.webpackCompiler.outputFileSystem)
-    .use(server.webpackCompiler.outputFileSystem)
-    .use(fs)
-
-  patchRequire(ufs)
 }

@@ -1,13 +1,19 @@
 /* eslint-disable @typescript-eslint/ban-ts-ignore */
+import fs from 'fs'
 import { Stats } from 'webpack'
 import { IFs } from 'memfs'
-// @ts-ignore
-import { requireFromString } from 'require-from-memory'
+import { requireFromString } from '../helpers/require-from-memory'
+import { patchRequire, patchFs } from 'fs-monkey'
+import { ufs } from 'unionfs'
 
 import { pProps } from '../utils/p-utils'
 
 import { ClientServerCompiler } from '../types/compiler'
 import { MiddlewareOptions } from '../types/middleware'
+
+const ofs = {
+  ...fs
+}
 
 const getServerAsset = (stats: Stats.ToJsonOutput) => {
   if (stats.entrypoints) {
@@ -69,6 +75,10 @@ function loadExports(
   options?: MiddlewareOptions
 ) {
   const { webpackConfig, webpackCompiler } = compiler.server
+  const {
+    webpackConfig: webpackClientConfig,
+    webpackCompiler: webpackClientCompiler
+  } = compiler.client
 
   const serverFile = getServerFile(
     webpackConfig,
@@ -78,6 +88,16 @@ function loadExports(
   const serverFilePath = `${
     webpackConfig.output ? webpackConfig.output.path : ''
   }/${serverFile}`
+
+  const serverFS = webpackCompiler.outputFileSystem
+  const clientFS = webpackClientCompiler.outputFileSystem
+
+  ufs
+    .use(serverFS)
+    .use(clientFS)
+    .use(ofs)
+  patchFs(ufs)
+  patchRequire(ufs)
 
   return new Promise((res, rej) => {
     const fileExists = ((webpackCompiler.outputFileSystem as unknown) as IFs).existsSync(
@@ -91,7 +111,8 @@ function loadExports(
           if (err) {
             rej(err)
           } else if (buffer) {
-            res(buffer.toString())
+            console.log(fs.readFileSync(serverFilePath))
+            // res(buffer.toString())
           }
         }
       )
