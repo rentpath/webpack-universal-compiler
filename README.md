@@ -20,6 +20,7 @@ npm install webpack-universal-compiler --save-dev
 
 ## Prerequisites
 
+**For a working example check out out [SSR-Example](https://github.com/verydanny/ssr-example)**
 
 It's important that your server side bundle exports middleware in the form of `(req, res, next) => void`. You may export many middleware if you'd like and then compose them together. We will be using the following 2 webpack entry files as examples. Some examples of usage are below. This package allows a lot of flexibility, so use as you wish.
 
