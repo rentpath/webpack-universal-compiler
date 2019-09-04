@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/ban-ts-ignore */
-import AggregateError from 'aggregate-error'
+import AggregateError from "aggregate-error"
 
 export async function pFinally<T>(
   promise: Promise<T> | (() => Promise<T>),
@@ -51,7 +51,7 @@ export const pLimit = (concurrency: number) => {
     )
   ) {
     return Promise.reject(
-      new TypeError('Expected `concurrency` to be a number from 1 and up')
+      new TypeError("Expected `concurrency` to be a number from 1 and up")
     )
   }
 
@@ -64,7 +64,7 @@ export const pLimit = (concurrency: number) => {
     if (queue.length > 0) {
       const currentItem = queue.shift()
 
-      if (typeof currentItem === 'function') {
+      if (typeof currentItem === "function") {
         currentItem()
       }
     }
@@ -119,7 +119,7 @@ export const pSettle = async <T>(promises: Promise<T>[], options: {} = {}) => {
     ...options
   }
 
-  if (!(typeof concurrency === 'number' && concurrency >= 1)) {
+  if (!(typeof concurrency === "number" && concurrency >= 1)) {
     throw new TypeError(
       `Expected \`concurrence\` to be a number from 1 and up, got \`${concurrency}\` (${typeof concurrency})`
     )
@@ -127,11 +127,11 @@ export const pSettle = async <T>(promises: Promise<T>[], options: {} = {}) => {
 
   const limit = pLimit(concurrency)
 
-  if (typeof limit === 'function') {
+  if (typeof limit === "function") {
     return Promise.all(promises.map(item => pReflect(limit(() => item))))
   }
 
-  return TypeError('Something went wrong with pSettle')
+  return TypeError("Something went wrong with pSettle")
 }
 
 type TheMapper<Element = any, NewElement = any> = (
@@ -145,11 +145,11 @@ export const pMap = async <T, NewT>(
   { concurrency = Infinity, stopOnError = true } = {}
 ): Promise<NewT[]> => {
   return new Promise((resolve, reject) => {
-    if (typeof mapper !== 'function') {
-      throw new TypeError('Mapper function is required')
+    if (typeof mapper !== "function") {
+      throw new TypeError("Mapper function is required")
     }
 
-    if (!(typeof concurrency === 'number' && concurrency >= 1)) {
+    if (!(typeof concurrency === "number" && concurrency >= 1)) {
       throw new TypeError(
         `Expected \`concurrency\` to be a number from 1 and up, got \`${concurrency}\` (${typeof concurrency})`
       )

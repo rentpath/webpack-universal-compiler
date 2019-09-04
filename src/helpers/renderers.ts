@@ -1,16 +1,16 @@
-import webpack from 'webpack'
-import chalk from 'chalk'
-import PrettyError from 'pretty-error'
-import symbols from './symbols'
+import webpack from "webpack"
+import chalk from "chalk"
+import PrettyError from "pretty-error"
+import symbols from "./symbols"
 
-import { ErrWithStats } from '../types/compiler'
+import { ErrWithStats } from "../types/compiler"
 
 const prettyError = new PrettyError()
 
 prettyError.appendStyle({
-  'pretty-error > header': { display: 'none' },
-  'pretty-error > trace': { marginTop: 0 },
-  'pretty-error > trace > item': { marginBottom: 0 }
+  "pretty-error > header": { display: "none" },
+  "pretty-error > trace": { marginTop: 0 },
+  "pretty-error > trace > item": { marginBottom: 0 }
 })
 
 const defaultStatsOptions = {
@@ -27,9 +27,9 @@ const defaultStatsOptions = {
 }
 
 const renderGenericError = (err: NodeJS.ErrnoException) => {
-  let str = ''
+  let str = ""
 
-  if (err.code || (err.name && err.name !== 'Error')) {
+  if (err.code || (err.name && err.name !== "Error")) {
     str += chalk.dim(`${err.code || err.name}: `)
   }
 
@@ -39,9 +39,9 @@ const renderGenericError = (err: NodeJS.ErrnoException) => {
   const prettyErrStr = prettyError
     .render(err)
     .trim()
-    .split('\n')
+    .split("\n")
     .slice(0, -1)
-    .join('\n')
+    .join("\n")
 
   str += `${prettyErrStr}`
 
@@ -51,10 +51,10 @@ const renderGenericError = (err: NodeJS.ErrnoException) => {
 const renderStart = () => `${chalk.dim(symbols.start)} Compiling...`
 
 const renderSuccess = (duration?: number) => {
-  let str = ''
+  let str = ""
 
   str += `${chalk.green(symbols.success)} Compilation succeeded`
-  str += duration != null ? ` ${chalk.dim(`(${duration}ms)`)}` : ''
+  str += duration != null ? ` ${chalk.dim(`(${duration}ms)`)}` : ""
 
   return str
 }
@@ -65,7 +65,7 @@ const renderInvalidate = () =>
   `${chalk.cyan(symbols.invalidate)} Compilation invalidated`
 
 const renderError = (err: ErrWithStats, statsOptions = defaultStatsOptions) => {
-  let str = ''
+  let str = ""
 
   // If there's stats & compilation errors, then we just render them
   if (err.stats && err.stats.hasErrors && err.stats.hasErrors()) {

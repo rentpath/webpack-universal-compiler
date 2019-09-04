@@ -1,12 +1,12 @@
-import webpack from 'webpack'
-import { simpleWebpackCompiler } from '../webpack/compiler'
-import { clientServerCompiler } from '../webpack-universal/universal-compiler'
+import webpack from "webpack"
+import { simpleWebpackCompiler } from "../webpack/compiler"
+import { clientServerCompiler } from "../webpack-universal/universal-compiler"
 
 /// <reference types="node" />
 /// <reference types="webpack" />
 
 export interface ReporterOptions {
-  stats?: boolean | 'once' | undefined
+  stats?: boolean | "once" | undefined
   write?: (str: string) => any
   printStart?: () => string
   printSuccess?: ({ duration }: { duration?: number }) => string

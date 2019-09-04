@@ -1,14 +1,14 @@
-import * as path from 'path'
-import notifier from 'node-notifier'
-import readPkgUp from 'read-pkg-up'
-import stripAnsi from 'strip-ansi'
-import renderers from '../helpers/renderers'
+import * as path from "path"
+import notifier from "node-notifier"
+import readPkgUp from "read-pkg-up"
+import stripAnsi from "strip-ansi"
+import renderers from "../helpers/renderers"
 
 import {
   ClientServerCompiler,
   SimpleCompiler,
   ErrWithStats
-} from '../types/compiler'
+} from "../types/compiler"
 
 export interface NotifierOptions {
   title?: string
@@ -27,7 +27,7 @@ function getDefaultTitle() {
     if (pkgUp && pkgUp.package.name) {
       defaultTitle = pkgUp.package.name
     } else {
-      defaultTitle = 'Unknown Project'
+      defaultTitle = "Unknown Project"
     }
   }
 
@@ -50,7 +50,7 @@ export function startNotifying(
 ) {
   options = {
     title: undefined,
-    icon: path.resolve(__dirname, '../../webpack-logo.png'),
+    icon: path.resolve(__dirname, "../../webpack-logo.png"),
     sound: false,
     ...options
   }
@@ -70,17 +70,17 @@ export function startNotifying(
   const onEnd = () => {
     if (!lastBuildSucceeded) {
       lastBuildSucceeded = true
-      notify('Build Successful')
+      notify("Build Successful")
       lastBuildSucceeded = false
     }
   }
 
   const stopNotifying = () => {
-    compiler.removeListener('end', onEnd)
-    compiler.removeListener('error', onError)
+    compiler.removeListener("end", onEnd)
+    compiler.removeListener("error", onError)
   }
 
-  compiler.on('error', onError).on('end', onEnd)
+  compiler.on("error", onError).on("end", onEnd)
 
   return {
     stop: stopNotifying,

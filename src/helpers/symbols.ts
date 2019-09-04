@@ -1,4 +1,4 @@
-import figures from 'figures'
+import figures from "figures"
 
 export default {
   start: figures.bullet,

@@ -1,26 +1,26 @@
-import chalk from 'chalk'
-import { EventEmitter } from 'events'
-import webpack from 'webpack'
-import { Tapable } from 'tapable'
+import chalk from "chalk"
+import { EventEmitter } from "events"
+import webpack from "webpack"
+import { Tapable } from "tapable"
 
-import { statsToStringOptions } from '../const'
-import { wrap } from '../helpers/fp-functions'
-import { ObserveWebpackCompilerState } from '../types/compiler'
+import { statsToStringOptions } from "../const"
+import { wrap } from "../helpers/fp-functions"
+import { ObserveWebpackCompilerState } from "../types/compiler"
 
 const createAddHook = (webpackCompiler: webpack.Compiler) => <
   Name extends keyof typeof webpackCompiler.hooks
 >(
   name: Name,
-  method: 'tap' | 'tapAsync' | Tapable.Handler,
+  method: "tap" | "tapAsync" | Tapable.Handler,
   callback?: Tapable.Handler
 ) => {
-  if (typeof method === 'function') {
+  if (typeof method === "function") {
     callback = method
-    method = 'tap'
+    method = "tap"
   }
 
   if (webpackCompiler.hooks) {
-    webpackCompiler.hooks[name][method]('simple-compiler', (...args) => {
+    webpackCompiler.hooks[name][method]("simple-compiler", (...args) => {
       return (callback as Tapable.Handler)(...args)
     })
   }
@@ -41,7 +41,7 @@ export function observeWebpackCompiler(webpackCompiler: webpack.Compiler) {
   /**
    * NODE JS Global error fix
    */
-  eventEmitter.on('error', () => {})
+  eventEmitter.on("error", () => {})
 
   webpackCompiler.run = wrap(webpackCompiler.run, (run, callback) => {
     Object.assign(state, {
@@ -49,7 +49,7 @@ export function observeWebpackCompiler(webpackCompiler: webpack.Compiler) {
       error: null,
       compilation: null
     })
-    eventEmitter.emit('begin')
+    eventEmitter.emit("begin")
 
     run.call(webpackCompiler, (error, stats) => {
       if (error) {
@@ -58,22 +58,22 @@ export function observeWebpackCompiler(webpackCompiler: webpack.Compiler) {
           error,
           compilation: null
         })
-        eventEmitter.emit('error', error)
+        eventEmitter.emit("error", error)
       }
 
       callback(error, stats)
     })
   })
 
-  addHook('done', (stats: webpack.Stats) => {
+  addHook("done", (stats: webpack.Stats) => {
     const info = stats.toString(statsToStringOptions)
 
     if (stats.hasWarnings()) {
-      console.log(`${chalk.yellow.bold('Warning:')} ` + info)
+      console.log(`${chalk.yellow.bold("Warning:")} ` + info)
     }
 
     if (stats.hasErrors()) {
-      const error = Object.assign(new Error('Webpack compilation failed'), {
+      const error = Object.assign(new Error("Webpack compilation failed"), {
         stats
       })
 
@@ -83,7 +83,7 @@ export function observeWebpackCompiler(webpackCompiler: webpack.Compiler) {
         compilation: null
       })
 
-      eventEmitter.emit('error', error)
+      eventEmitter.emit("error", error)
     } else {
       Object.assign(state, {
         isCompiling: false,
@@ -96,27 +96,27 @@ export function observeWebpackCompiler(webpackCompiler: webpack.Compiler) {
               : null
         }
       })
-      eventEmitter.emit('end', state.compilation)
+      eventEmitter.emit("end", state.compilation)
     }
   })
 
   addHook(
-    'watchRun',
-    'tapAsync',
+    "watchRun",
+    "tapAsync",
     (_compiler: webpack.Compiler, callback: () => void) => {
       Object.assign(state, {
         isCompiling: true,
         error: null,
         compilation: null
       })
-      eventEmitter.emit('begin')
+      eventEmitter.emit("begin")
       callback()
     }
   )
 
-  addHook('failed', error => {
+  addHook("failed", error => {
     Object.assign(state, { isCompiling: false, error, compilation: null })
-    eventEmitter.emit('error', error)
+    eventEmitter.emit("error", error)
   })
 
   webpackCompiler.watch = wrap(
@@ -128,16 +128,16 @@ export function observeWebpackCompiler(webpackCompiler: webpack.Compiler) {
     }
   )
 
-  addHook('watchClose', () => {
+  addHook("watchClose", () => {
     state.webpackWatching = null
 
     if (state.isCompiling) {
-      const error = Object.assign(new Error('Webpack compilation cancelled'), {
+      const error = Object.assign(new Error("Webpack compilation cancelled"), {
         hideStack: true
       })
 
       Object.assign(state, { isCompiling: false, error, compilation: null })
-      eventEmitter.emit('error', error)
+      eventEmitter.emit("error", error)
     }
   })
 

@@ -1,12 +1,12 @@
-import { Request, Response, NextFunction } from 'express'
-import { Compiler, OutputFileSystem, Stats } from 'webpack'
-import { compose } from 'compose-middleware'
+import { Request, Response, NextFunction } from "express"
+import { Compiler, OutputFileSystem, Stats } from "webpack"
+import { compose } from "compose-middleware"
 import webpackDevMiddleware, {
   WebpackDevMiddleware
-} from 'webpack-dev-middleware'
+} from "webpack-dev-middleware"
 
-import { MiddlewareOptions } from '../types/middleware'
-import { ClientServerCompiler } from '../types/compiler'
+import { MiddlewareOptions } from "../types/middleware"
+import { ClientServerCompiler } from "../types/compiler"
 
 type HandlerFunc = (stats: Stats) => void
 
@@ -19,7 +19,7 @@ function createStubbedWebpackCompiler(webpackCompiler: Compiler) {
     {},
     {
       get(target, property) {
-        if (property === 'done') {
+        if (property === "done") {
           return {
             tap: (name: string, handler: HandlerFunc) =>
               doneHandlers.push(handler)
@@ -39,12 +39,12 @@ function createStubbedWebpackCompiler(webpackCompiler: Compiler) {
 
   const stubbedWebpackCompiler = new Proxy(webpackCompiler, {
     get(target, property) {
-      if (property === 'run' || property === 'watch') {
+      if (property === "run" || property === "watch") {
         return () => {}
       }
 
       // The hooks API is for webpack >= v4
-      if (property === 'hooks') {
+      if (property === "hooks") {
         return stubbedWebpackCompilerHooks
       }
 
@@ -58,7 +58,8 @@ function createStubbedWebpackCompiler(webpackCompiler: Compiler) {
 
   return {
     stubbedWebpackCompiler,
-    notifyDone: (stats: Stats) => doneHandlers.forEach(handler => handler(stats))
+    notifyDone: (stats: Stats) =>
+      doneHandlers.forEach(handler => handler(stats))
   }
 }
 
@@ -73,13 +74,13 @@ export function devMiddleware(
   )
 
   const devMiddleware = webpackDevMiddleware(stubbedWebpackCompiler, {
-    logLevel: 'silent',
+    logLevel: "silent",
     publicPath:
       webpackConfig.output && webpackConfig.output.publicPath
         ? webpackConfig.output.publicPath
-        : '/',
+        : "/",
     watchOptions: undefined,
-    index: 'blah-blah-index-blah',
+    index: "blah-blah-index-blah",
     headers: options.headers
   })
 
@@ -88,10 +89,10 @@ export function devMiddleware(
       if (
         typeof webpackCompiler.outputFileSystem[
           key as keyof OutputFileSystem
-        ] === 'function'
+        ] === "function"
       ) {
         devMiddleware.fileSystem[
-          key as keyof WebpackDevMiddleware['fileSystem']
+          key as keyof WebpackDevMiddleware["fileSystem"]
         ] = webpackCompiler.outputFileSystem[
           key as keyof OutputFileSystem
         ].bind(webpackCompiler.outputFileSystem)

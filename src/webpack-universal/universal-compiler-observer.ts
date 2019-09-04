@@ -1,9 +1,9 @@
-import chalk from 'chalk'
-import { EventEmitter } from 'events'
+import chalk from "chalk"
+import { EventEmitter } from "events"
 
-import { simpleWebpackCompiler } from '../webpack/compiler'
+import { simpleWebpackCompiler } from "../webpack/compiler"
 
-import { ObserveWebpackIsoCompilerState } from '../types/compiler'
+import { ObserveWebpackIsoCompilerState } from "../types/compiler"
 
 type Compiler = ReturnType<typeof simpleWebpackCompiler>
 
@@ -41,7 +41,7 @@ export function observeIsomorphicCompilers(
       compilation: null,
       lastStats: null
     })
-    eventEmitter.emit('begin')
+    eventEmitter.emit("begin")
   }
 
   const onError = (type: string, err: NodeJS.ErrnoException) => {
@@ -61,14 +61,14 @@ export function observeIsomorphicCompilers(
 
     if (bothError) {
       const bothPrettyError =
-        '\n\n' +
-        chalk.bgRed.whiteBright.bold('CLIENT: ') +
+        "\n\n" +
+        chalk.bgRed.whiteBright.bold("CLIENT: ") +
         clientErrors +
-        '\n' +
-        '\n' +
-        chalk.bgRed.whiteBright.bold('SERVER: ') +
+        "\n" +
+        "\n" +
+        chalk.bgRed.whiteBright.bold("SERVER: ") +
         serverErrors +
-        '\n'
+        "\n"
 
       console.log(bothPrettyError)
     }
@@ -86,7 +86,7 @@ export function observeIsomorphicCompilers(
         }
       })
 
-      eventEmitter.emit('error', eitherError)
+      eventEmitter.emit("error", eitherError)
     } else {
       const compilation = {
         duration: state.beginAt ? Date.now() - state.beginAt : null,
@@ -94,7 +94,7 @@ export function observeIsomorphicCompilers(
         serverStats: serverCompiler.getCompilation().stats
       }
 
-      Object.defineProperty(compilation, 'stats', {
+      Object.defineProperty(compilation, "stats", {
         value: compilation.clientStats,
         enumerable: false,
         configurable: true
@@ -105,24 +105,24 @@ export function observeIsomorphicCompilers(
         error: null,
         compilation
       })
-      eventEmitter.emit('end', compilation)
+      eventEmitter.emit("end", compilation)
     }
   }
 
   /**
    * NODE JS Global error fix
    */
-  eventEmitter.on('error', () => {})
+  eventEmitter.on("error", () => {})
 
   clientCompiler
-    .on('begin', onBegin)
-    .on('end', onEnd)
-    .on('error', err => onError('client', err))
+    .on("begin", onBegin)
+    .on("end", onEnd)
+    .on("error", err => onError("client", err))
 
   serverCompiler
-    .on('begin', onBegin)
-    .on('end', onEnd)
-    .on('error', err => onError('server', err))
+    .on("begin", onBegin)
+    .on("end", onEnd)
+    .on("error", err => onError("server", err))
 
   return { eventEmitter, state }
 }

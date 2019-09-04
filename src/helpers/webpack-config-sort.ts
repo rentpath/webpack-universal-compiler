@@ -1,5 +1,5 @@
-import { Compiler, Configuration } from 'webpack'
-import chalk from 'chalk'
+import { Compiler, Configuration } from "webpack"
+import chalk from "chalk"
 import {
   isMultiCompiler,
   isMultiConfig,
@@ -9,7 +9,7 @@ import {
   isSingleConfiguration,
   isClientConfiguration,
   isServerConfiguration
-} from '../types/type-guards'
+} from "../types/type-guards"
 
 function checkForSingleCompiler(
   client: Compiler | Configuration,
@@ -19,9 +19,9 @@ function checkForSingleCompiler(
     console.log(
       chalk.yellow.bold(
         `${chalk.white.bold(
-          'Warning: '
+          "Warning: "
         )}After scanning your Webpack Compiler instance, the first param doesn't appear to be a client Compiler instance.`,
-        'The order of Compilers should be [client, server]...proceeding anyway\n'
+        "The order of Compilers should be [client, server]...proceeding anyway\n"
       )
     )
   }
@@ -30,9 +30,9 @@ function checkForSingleCompiler(
     console.log(
       chalk.yellow.bold(
         `${chalk.white.bold(
-          'Warning: '
+          "Warning: "
         )}After scanning your Webpack Compiler instance, the second param doesn't appear to be a server Compiler instance.`,
-        'The order of Compilers should be [client, server]...proceeding anyway\n'
+        "The order of Compilers should be [client, server]...proceeding anyway\n"
       )
     )
   }
@@ -46,9 +46,9 @@ function checkForSingleConfiguration(
     console.log(
       chalk.yellow.bold(
         `${chalk.white.bold(
-          'Warning: '
+          "Warning: "
         )}After scanning your Webpack Configuration, the first param doesn't appear to be a client Configuration`,
-        'The order of Configurations should be [client, server]...proceeding anyway\n'
+        "The order of Configurations should be [client, server]...proceeding anyway\n"
       )
     )
   }
@@ -57,9 +57,9 @@ function checkForSingleConfiguration(
     console.log(
       chalk.yellow.bold(
         `${chalk.white.bold(
-          'Warning: '
+          "Warning: "
         )}After scanning your Webpack Configuration, the second param doesn't appear to be a server Configuration`,
-        'The order of Configurations should be [client, server]...proceeding anyway\n'
+        "The order of Configurations should be [client, server]...proceeding anyway\n"
       )
     )
   }
@@ -72,7 +72,7 @@ export function webpackConfigValidator(
   if (isMultiCompiler(client) || isMultiCompiler(server)) {
     console.log(
       chalk.red.bold(
-        'You passed in a MultiCompiler instance, please pass one Compiler or Webpack Configuration at a time!'
+        "You passed in a MultiCompiler instance, please pass one Compiler or Webpack Configuration at a time!"
       )
     )
 
@@ -82,7 +82,7 @@ export function webpackConfigValidator(
   if (isMultiConfig(client) || isMultiConfig(server)) {
     return console.log(
       chalk.red.bold(
-        'You passed in an array of Webpack Configurations, please pass one Compiler or Webpack Configuration at a time!'
+        "You passed in an array of Webpack Configurations, please pass one Compiler or Webpack Configuration at a time!"
       )
     )
 

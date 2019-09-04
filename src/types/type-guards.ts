@@ -1,12 +1,12 @@
-import { Compiler, MultiCompiler, Configuration } from 'webpack'
-import { MiddlewareOptions } from './middleware'
+import { Compiler, MultiCompiler, Configuration } from "webpack"
+import { MiddlewareOptions } from "./middleware"
 
 /// <reference types="webpack" />
 
 export function isMultiCompiler(compiler?: any): compiler is MultiCompiler {
   if (
     compiler &&
-    typeof (compiler as MultiCompiler).compilers !== 'undefined'
+    typeof (compiler as MultiCompiler).compilers !== "undefined"
   ) {
     return true
   }
@@ -16,8 +16,8 @@ export function isMultiCompiler(compiler?: any): compiler is MultiCompiler {
 export function isMultiConfig(config?: any): config is Configuration[] {
   if (
     Array.isArray(config) &&
-    (typeof config[0].run === 'undefined' ||
-      typeof config[1].run === 'undefined')
+    (typeof config[0].run === "undefined" ||
+      typeof config[1].run === "undefined")
   ) {
     return true
   }
@@ -26,7 +26,7 @@ export function isMultiConfig(config?: any): config is Configuration[] {
 }
 
 export function isSingleCompiler(compiler?: any): compiler is Compiler {
-  if (compiler && typeof (compiler as Compiler).run !== 'undefined') {
+  if (compiler && typeof (compiler as Compiler).run !== "undefined") {
     return true
   }
 
@@ -35,13 +35,13 @@ export function isSingleCompiler(compiler?: any): compiler is Compiler {
 
 export function isMiddlewareOptions(config?: any): config is MiddlewareOptions {
   const allOptions = [
-    'inMemoryFilesystem',
-    'watchDelay',
-    'watchOptions',
-    'report',
-    'notify',
-    'headers',
-    'findServerAssetName'
+    "inMemoryFilesystem",
+    "watchDelay",
+    "watchOptions",
+    "report",
+    "notify",
+    "headers",
+    "findServerAssetName"
   ]
 
   if (!config) {
@@ -69,11 +69,11 @@ export function isSingleConfiguration(config?: any): config is Configuration {
 export function isClientSingleCompiler(
   compiler: Compiler
 ): compiler is Compiler {
-  if (compiler.name === 'client') {
+  if (compiler.name === "client") {
     return true
   } else if (
-    compiler.options.target === 'web' ||
-    compiler.options.target === 'webworker'
+    compiler.options.target === "web" ||
+    compiler.options.target === "webworker"
   ) {
     return true
   }
@@ -84,16 +84,16 @@ export function isClientSingleCompiler(
 export function isServerSingleCompiler(
   compiler: Compiler
 ): compiler is Compiler {
-  if (compiler.name === 'server') {
+  if (compiler.name === "server") {
     return true
   } else if (
-    compiler.options.target === 'node-webkit' ||
-    compiler.options.target === 'node' ||
-    compiler.options.target === 'async-node' ||
-    compiler.options.target === 'electron' ||
-    compiler.options.target === 'atom' ||
-    compiler.options.target === 'electron-main' ||
-    compiler.options.target === 'electron-renderer'
+    compiler.options.target === "node-webkit" ||
+    compiler.options.target === "node" ||
+    compiler.options.target === "async-node" ||
+    compiler.options.target === "electron" ||
+    compiler.options.target === "atom" ||
+    compiler.options.target === "electron-main" ||
+    compiler.options.target === "electron-renderer"
   ) {
     return true
   }
@@ -104,9 +104,9 @@ export function isServerSingleCompiler(
 export function isClientConfiguration(
   config: Configuration
 ): config is Configuration {
-  if (config && config.name === 'client') {
+  if (config && config.name === "client") {
     return true
-  } else if (config.target === 'web' || config.target === 'webworker') {
+  } else if (config.target === "web" || config.target === "webworker") {
     return true
   }
 
@@ -116,16 +116,16 @@ export function isClientConfiguration(
 export function isServerConfiguration(
   config: Configuration
 ): config is Configuration {
-  if (config.name === 'server') {
+  if (config.name === "server") {
     return true
   } else if (
-    config.target === 'node-webkit' ||
-    config.target === 'node' ||
-    config.target === 'async-node' ||
-    config.target === 'electron' ||
-    config.target === 'atom' ||
-    config.target === 'electron-main' ||
-    config.target === 'electron-renderer'
+    config.target === "node-webkit" ||
+    config.target === "node" ||
+    config.target === "async-node" ||
+    config.target === "electron" ||
+    config.target === "atom" ||
+    config.target === "electron-main" ||
+    config.target === "electron-renderer"
   ) {
     return true
   }

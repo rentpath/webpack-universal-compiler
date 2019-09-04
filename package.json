@@ -10,7 +10,9 @@
     "compile:es": "yarn clean:es && yarn tsc --module es6 --outDir es -p ./",
     "compile:watch": "yarn clean:commonjs && yarn tsc --declaration --module commonjs -w -p ./",
     "compile:es:commonjs": "yarn compile:commonjs && yarn compile:es",
-    "tsc:declarationsOnly": "clean && tsc --declaration --emitDeclarationOnly -p ./"
+    "tsc:declarationsOnly": "clean && tsc --declaration --emitDeclarationOnly -p ./",
+    "lint": "yarn eslint ./src/**/*",
+    "lint:fix": "yarn eslint ./src/**/* --fix"
   },
   "files": [
     "lib",
@@ -48,6 +50,7 @@
     "aggregate-error": "^3.0.0",
     "chalk": "^2.4.2",
     "compose-middleware": "^5.0.1",
+    "decache": "^4.5.1",
     "figures": "^3.0.0",
     "fs-monkey": "^0.3.3",
     "indent-string": "^4.0.0",

@@ -65,7 +65,7 @@ const app = express()
 const options = {
   inMemoryFilesystem: true
 }
-const { middleware } = webpackClientServerMiddleware(
+const middleware = webpackClientServerMiddleware(
   clientConfig,
   serverConfig,
   options
@@ -92,8 +92,8 @@ app.listen(8080, () => {
 ### With hot reloading
 Hot reloading should be simple.
 
-1. You must add it as an option to the middleware.
-2. Add 'webpack-hot-middleware/client' to your client webpack entry array/object.
+1. You must add it as an option to the `webpackClientServerMiddleware`.
+2. Add `webpack-hot-middleware/client` to your client webpack entry array/object.
 3. Add `new webpack.HotModuleReplacementPlugin()` to your array of plugins.
 
 **Important:** To prevent memory leaks, do not have hashes in your `output.filename`, `output.chunkFilename`, `output.hotUpdateMainFilename`, or `hotUpdateChunkFilename`. This is **ONLY** for dev mode. You may enable chunk hashing for production/CDN use.
@@ -105,7 +105,7 @@ const options = {
   hot: true
 }
 
-const { middleware } = webpackClientServerMiddleware(
+const middleware = webpackClientServerMiddleware(
   clientConfig,
   serverConfig,
   options
@@ -139,19 +139,16 @@ module.exports = {
 
 ```
 
-## API
-
-The `webpack-universal-compiler` itself has 3 exports: **`simpleWebpackCompiler`**, **`clientServerCompiler`**, and **`webpackClientServerMiddleware`**. WebpackClientServerMiddleware uses the other compilers as the backbone to construct a compilation that's in-sync.
-
 ## webpackClientServerMiddleware API
 
-`webpack-universal-compiler` provides a very useful method (besides the middleware), the compiler instance.
+`webpack-universal-compiler` itself returns an express (connect) middleware: `(req, res, next): void`, but the middleware object also has the running instance of the dual webpack compiler (client and server). Documentation below shows how to access the compilers.
 
 ### `middleware`
 
 This is the middleware that provides your express application with both the client and the server bundles. The middleware provides client and server compilation information in to **`res.locals.universal`**
 
 **Type:** `Function` (express middleware)
+<br>
 <br>
 **Example:**
 <br>
@@ -177,23 +174,23 @@ app.use((req, res, next) => {
 })
 ```
 
-### `compiler`
+### `middleware.compiler`
+
+An object containing information about the compiler running in the background for both client and server.
 
 **Type:** `Object`
 <br>
-
-An object containing information about the compiler running in the background for both client and server. It has useful methods such as `on`, `getCompilation()`, and more.
 <br>
 **Example:**
 <br>
 ```ts
-const { middleware, compiler } = webpackClientServerMiddleware(
+const middleware = webpackClientServerMiddleware(
   clientConfig,
   serverConfig,
   options
 )
 
-compiler.on('end', compilation => {
+middleware.compiler.on('end', compilation => {
   if (compilation.clientStats.hasErrors()) {
     //etc
   }
@@ -201,6 +198,103 @@ compiler.on('end', compilation => {
 
 app.use(middleware)
 ```
+
+#### Methods
+
+Most of these `compiler` methods return the same compilation Type.
+
+```ts
+type Compilation = {
+  duration?: number
+  clientStats?: webpack.Stats
+  serverStats?: webpack.Stats
+}
+```
+
+- **`compiler.client`**
+
+  Object containing the client configuration and the instance of the client Compiler `webpack.Compiler`.
+
+- **`compiler.server`**
+
+  Object containing the server configuration and the instance of the server Compiler `webpack.Compiler`.
+
+- **`compiler.isCompiling()`**
+
+  Returns if either the client or server compiler is compiling.
+
+  **Type:** `Function`  
+  **Returns:** `boolean`
+  
+- **`compiler.getCompilation()`**
+
+  Returns the last successful compilation stats.
+
+  **Type:** `Function`  
+  **Returns:** `Compilation`
+
+- **`compiler.getError()`**
+
+  Returns errors if there are any, useful mainly for watching. By default errors will get printed to console.
+
+  **Type:** `Function`  
+  **Returns:** `webpack.Stats`
+
+- **`compiler.run()`**
+
+  Runs the compiler, this is more for production builds. Not as useful for middleware.
+
+  **Type:** `Function`  
+  **Returns:** `Promise<Compilation>`
+
+- **`compiler.watch()`**
+
+  Starts webpack in watch mode. This is useful to pair with `compiler.resolve()` to resolve the last watch-compiled build.
+
+  **Type:** `Function`  
+
+- **`compiler.resolve()`**
+
+  Returns a Promise that resolves to the last compilation sequentially built by webpack's `watch`. This is the backbone of the middleware.
+
+  **Type:** `Function`  
+  **Returns:** `Promise<Compilation>`
+
+- **`compiler.on(event: 'begin' | 'end' | 'error' | 'invalidate', cb: Function)`**
+
+  There are a few events you may listen on, and react to with a callback function.
+
+  - `'begin'` - Compiler has started compiling.
+  - `'end', stats => void` - Compiler has finished compiling without errors. You have access to the stats object in the callback.
+  - `'error', err => void` - Compiler has finished compiling with errors. You have access to error and error stats with `err.stats` (if webpack didn't fail catastraphically).
+  - `'invalidate'` - Compiler has invalidated the last watch build.
+
+- **`compiler.emit(event: string | symbol, cb: Function)`**
+
+  You may also add your own emitters if you'd like.
+
+**Important:** All of these methods are available to the `clientServerCompiler` so you can build your own universal webpack compiler that's (more or less) pain free. It does not provide as much error catching, or set up the in-memory filesystem for you, but it streamlines the compilation process and keeps things in-sync.
+
+**Example:**  
+<br>
+```ts
+import { clientServerCompiler } from 'webpack-universal-compiler'
+
+import clientConfig from '../webpack/webpack.client.config'
+import serverConfig from '../webpack/webpack.server.config'
+
+const compilerInstance = clientServerCompiler(clientConfig, serverConfig)
+
+const runCompiler = async () => {
+  compilerInstance.watch()
+  compilerInstance.on('end', async () => {
+    const { clientStats, serverStats } = await compilerInstance.resolve()
+
+    // Do stuff with stats, start up server, build your own middleware.
+  })
+}
+```
+
 
 
 

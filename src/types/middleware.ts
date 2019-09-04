@@ -1,5 +1,5 @@
-import { Compiler, Stats } from 'webpack'
-import { NotifierOptions } from '../utils/os-notifications'
+import { Compiler, Stats } from "webpack"
+import { NotifierOptions } from "../utils/os-notifications"
 
 /// <reference types="webpack" />
 
@@ -8,7 +8,7 @@ export interface MiddlewareOptions {
   watchDelay?: number
   watchOptions?: Compiler.WatchOptions
   report?: {
-    stats?: boolean | 'once'
+    stats?: boolean | "once"
   }
   hot?: boolean
   notify?: boolean | NotifierOptions

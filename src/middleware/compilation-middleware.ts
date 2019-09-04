@@ -1,12 +1,12 @@
-import { Request, Response, NextFunction } from 'express'
-import { resolveCompilation } from '../utils/resolve-compilation'
+import { Request, Response, NextFunction } from "express"
+import { resolveCompilation } from "../utils/resolve-compilation"
 
-import { ClientServerCompiler } from '../types/compiler'
-import { MiddlewareOptions } from '../types/middleware'
+import { ClientServerCompiler } from "../types/compiler"
+import { MiddlewareOptions } from "../types/middleware"
 
 export function compilationMiddleware(
   compiler: ClientServerCompiler,
-  options: MiddlewareOptions
+  _options: MiddlewareOptions
 ) {
   const resolvedCompile = resolveCompilation(compiler, {})
 

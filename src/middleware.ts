@@ -1,24 +1,24 @@
-import chalk from 'chalk'
-import { Compiler, MultiCompiler, Configuration } from 'webpack'
-import webpackHotMiddleware from 'webpack-hot-middleware'
-import { compose } from 'compose-middleware'
-import { compilationMiddleware } from './middleware/compilation-middleware'
-import { devMiddleware } from './middleware/dev-middleware'
-import { clientServerCompiler } from './webpack-universal/universal-compiler'
-import { startReportingWebpackIsomorphic } from './webpack-universal/universal-compiler-reporter'
-import { simpleWebpackCompiler } from './webpack/compiler'
-import { startNotifying } from './utils/os-notifications'
-import { checkHashes } from './utils/check-hashes'
-import { MiddlewareOptions } from './types/middleware'
+import chalk from "chalk"
+import { Compiler, MultiCompiler, Configuration } from "webpack"
+import webpackHotMiddleware from "webpack-hot-middleware"
+import { compose } from "compose-middleware"
+import { compilationMiddleware } from "./middleware/compilation-middleware"
+import { devMiddleware } from "./middleware/dev-middleware"
+import { clientServerCompiler } from "./webpack-universal/universal-compiler"
+import { startReportingWebpackIsomorphic } from "./webpack-universal/universal-compiler-reporter"
+import { simpleWebpackCompiler } from "./webpack/compiler"
+import { startNotifying } from "./utils/os-notifications"
+import { checkHashes } from "./utils/check-hashes"
+import { MiddlewareOptions } from "./types/middleware"
 import {
   isMiddlewareOptions,
   isMultiCompiler,
   isSingleCompiler,
   isMultiConfig,
   isSingleConfiguration
-} from './types/type-guards'
-import { buildInMemoryFileSystem } from './utils/build-filesystem'
-import { NotifierOptions } from './utils/os-notifications'
+} from "./types/type-guards"
+import { buildInMemoryFileSystem } from "./utils/build-filesystem"
+import { NotifierOptions } from "./utils/os-notifications"
 
 function parseOptions(options: MiddlewareOptions) {
   options = {
@@ -26,9 +26,9 @@ function parseOptions(options: MiddlewareOptions) {
     watchDelay: 0,
     hot: false,
     watchOptions: undefined,
-    report: { stats: 'once' },
+    report: { stats: "once" },
     notify: true,
-    headers: { 'Cache-Control': 'max-age=0, must-revalidate' },
+    headers: { "Cache-Control": "max-age=0, must-revalidate" },
     ...options
   }
 
@@ -89,13 +89,13 @@ function parseArgs(
   ) {
     console.log(
       chalk.red.bold(
-        'You passed in only a single Compiler or Configuration, you must pass both a Server and Client\n\n' +
-          'const configs = [Client, Server]\n\n'
+        "You passed in only a single Compiler or Configuration, you must pass both a Server and Client\n\n" +
+          "const configs = [Client, Server]\n\n"
       )
     )
   }
 
-  throw new TypeError('Config Error')
+  throw new TypeError("Config Error")
 }
 
 function webpackClientServerMiddleware(
@@ -111,7 +111,7 @@ function webpackClientServerMiddleware(
     buildInMemoryFileSystem(compiler.client, compiler.server)
   }
 
-  if (typeof options.report !== 'undefined' && options.report !== false) {
+  if (typeof options.report !== "undefined" && options.report !== false) {
     options.report = startReportingWebpackIsomorphic(
       compiler,
       options.report
@@ -140,10 +140,9 @@ function webpackClientServerMiddleware(
 
   compiler.watch()
 
-  return {
-    middleware: compose(middleware),
+  return Object.assign(compose(middleware), {
     compiler
-  }
+  })
 }
 
 export {

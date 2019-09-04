@@ -1,14 +1,14 @@
-import indentString from 'indent-string'
+import indentString from "indent-string"
 
-import { pFinally } from '../utils/p-utils'
-import { wrap } from '../helpers/fp-functions'
-import renderers from '../helpers/renderers'
+import { pFinally } from "../utils/p-utils"
+import { wrap } from "../helpers/fp-functions"
+import renderers from "../helpers/renderers"
 
 import {
   SimpleCompiler,
   CompilationStats,
   ReporterOptionsSingleCompiler
-} from '../types/compiler'
+} from "../types/compiler"
 
 export function startReportingWebpack(
   compiler: SimpleCompiler,
@@ -30,12 +30,12 @@ export function startReportingWebpack(
   }
 
   const resetDisplayStats = () => {
-    if (options.stats === true || options.stats === 'once') {
+    if (options.stats === true || options.stats === "once") {
       displayStats = true
     }
   }
   const didPrintStats = () =>
-    (displayStats = options.stats === 'once' ? false : displayStats)
+    (displayStats = options.stats === "once" ? false : displayStats)
   const write = (str: string) => options.write && options.write(str)
 
   const onBegin = () => {
@@ -71,24 +71,24 @@ export function startReportingWebpack(
 
   const stopReporting = () => {
     compiler
-      .removeListener('begin', onBegin)
-      .removeListener('end', onEnd)
-      .removeListener('error', onError)
-      .removeListener('invalidate', onInvalidate)
+      .removeListener("begin", onBegin)
+      .removeListener("end", onEnd)
+      .removeListener("error", onError)
+      .removeListener("invalidate", onInvalidate)
   }
 
   resetDisplayStats()
-  ;['run', 'unwatch'].forEach((method: 'run' | 'unwatch') => {
+  ;["run", "unwatch"].forEach((method: "run" | "unwatch") => {
     compiler[method] = wrap(compiler[method], (fn, ...args) =>
       pFinally(fn(...args), resetDisplayStats)
     )
   })
 
   compiler
-    .on('error', onError)
-    .on('begin', onBegin)
-    .on('end', onEnd)
-    .on('invalidate', onInvalidate)
+    .on("error", onError)
+    .on("begin", onBegin)
+    .on("end", onEnd)
+    .on("invalidate", onInvalidate)
 
   return {
     stop: stopReporting,

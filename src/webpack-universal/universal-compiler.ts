@@ -1,15 +1,15 @@
-import webpack from 'webpack'
+import webpack from "webpack"
 
-import { wrap } from '../helpers/fp-functions'
-import { webpackConfigValidator } from '../helpers/webpack-config-sort'
-import { pSettle } from '../utils/p-utils'
-import { simpleWebpackCompiler } from '../webpack/compiler'
+import { wrap } from "../helpers/fp-functions"
+import { webpackConfigValidator } from "../helpers/webpack-config-sort"
+import { pSettle } from "../utils/p-utils"
+import { simpleWebpackCompiler } from "../webpack/compiler"
 
 import {
   observeIsomorphicCompilers,
   resetState
-} from './universal-compiler-observer'
-import { ObserveWebpackIsoCompilerState, ErrWithStats } from '../types/compiler'
+} from "./universal-compiler-observer"
+import { ObserveWebpackIsoCompilerState, ErrWithStats } from "../types/compiler"
 
 const createSubFacade = (
   compiler: ReturnType<typeof simpleWebpackCompiler>
@@ -23,7 +23,7 @@ export function clientServerCompiler(
   server: webpack.Compiler | webpack.Configuration
 ) {
   if (!webpackConfigValidator(client, server)) {
-    throw new TypeError('Incorrect Configuration')
+    throw new TypeError("Incorrect Configuration")
   }
 
   const clientCompiler = simpleWebpackCompiler(client)
@@ -50,8 +50,8 @@ export function clientServerCompiler(
     },
 
     run() {
-      clientCompiler.assertIdle('run')
-      serverCompiler.assertIdle('run')
+      clientCompiler.assertIdle("run")
+      serverCompiler.assertIdle("run")
 
       return pSettle([clientCompiler.run(), serverCompiler.run()]).then(() => {
         if (state.error) {
@@ -73,10 +73,10 @@ export function clientServerCompiler(
         }
       ) => void
     ) {
-      clientCompiler.assertIdle('watch')
-      serverCompiler.assertIdle('watch')
+      clientCompiler.assertIdle("watch")
+      serverCompiler.assertIdle("watch")
 
-      if (typeof options === 'function') {
+      if (typeof options === "function") {
         handler = options
         options = {}
       }
@@ -97,7 +97,7 @@ export function clientServerCompiler(
       const serverInvalidate = serverCompiler.watch(options, handler)
 
       return () => {
-        eventEmitter.emit('invalidate')
+        eventEmitter.emit("invalidate")
         resetState(state)
 
         clientInvalidate()
@@ -112,7 +112,7 @@ export function clientServerCompiler(
       ]).then(() => {})
     },
 
-    resolve(): Promise<ObserveWebpackIsoCompilerState['compilation']> {
+    resolve(): Promise<ObserveWebpackIsoCompilerState["compilation"]> {
       const { error, compilation, lastStats } = state
 
       if (error) {
@@ -146,8 +146,8 @@ export function clientServerCompiler(
       })
 
       const cleanup = () => {
-        eventEmitter.removeListener('error', onError)
-        eventEmitter.removeListener('end', onEnd)
+        eventEmitter.removeListener("error", onError)
+        eventEmitter.removeListener("end", onEnd)
         resetState(state)
       }
 
@@ -160,7 +160,7 @@ export function clientServerCompiler(
       }
 
       const onEnd = (
-        compilation: ObserveWebpackIsoCompilerState['compilation']
+        compilation: ObserveWebpackIsoCompilerState["compilation"]
       ) => {
         cleanup()
 
@@ -171,7 +171,7 @@ export function clientServerCompiler(
         }
       }
 
-      compiler.on('error', onError).on('end', onEnd)
+      compiler.on("error", onError).on("end", onEnd)
 
       return deferred.promise
     }

@@ -1,15 +1,17 @@
 /* eslint-disable @typescript-eslint/ban-ts-ignore */
-import fs from 'fs'
-import { Stats } from 'webpack'
-import { IFs } from 'memfs'
-import { requireFromString } from '../helpers/require-from-memory'
-import { patchRequire, patchFs } from 'fs-monkey'
-import { ufs } from 'unionfs'
+import fs from "fs"
+import decache from "decache"
+import { Stats } from "webpack"
+import { IFs } from "memfs"
+import { patchRequire, patchFs } from "fs-monkey"
+// @ts-ignore
+import { requireFromString } from "require-from-memory"
+import { ufs } from "unionfs"
 
-import { pProps } from '../utils/p-utils'
+import { pProps } from "../utils/p-utils"
 
-import { ClientServerCompiler } from '../types/compiler'
-import { MiddlewareOptions } from '../types/middleware'
+import { ClientServerCompiler } from "../types/compiler"
+import { MiddlewareOptions } from "../types/middleware"
 
 const ofs = {
   ...fs
@@ -28,70 +30,25 @@ const getServerAsset = (stats: Stats.ToJsonOutput) => {
         return serverFileName
       }
 
-      throw Object.assign(new Error('Seems that there is no server file!'), {
+      throw Object.assign(new Error("Seems that there is no server file!"), {
         hideStack: true
       })
     }
 
-    throw Object.assign(new Error('Seems that there are no assets?'), {
+    throw Object.assign(new Error("Seems that there are no assets?"), {
       hideStack: true
     })
   }
 
-  throw Object.assign(new Error('No Entrypoint!'), {
+  throw Object.assign(new Error("No Entrypoint!"), {
     hideStack: true
   })
 }
 
-/**
- * Removes a module from the cache
- */
-function purgeCache(moduleName) {
-  // Traverse the cache looking for the files
-  // loaded by the specified module name
-  searchCache(moduleName, function(mod) {
-    delete require.cache[mod.id]
-  })
-
-  // Remove cached paths to the module.
-  // Thanks to @bentael for pointing this out.
-  Object.keys(module.constructor._pathCache).forEach(function(cacheKey) {
-    if (cacheKey.indexOf(moduleName) > 0) {
-      delete module.constructor._pathCache[cacheKey]
-    }
-  })
-}
-
-/**
- * Traverses the cache to search for all the cached
- * files of the specified module name
- */
-function searchCache(moduleName, callback) {
-  // Resolve the module identified by the specified name
-  let mod = require.resolve(moduleName)
-
-  // Check if the module has been resolved and found within
-  // the cache
-  if (mod && (mod = require.cache[mod]) !== undefined) {
-    // Recursively go over the results
-    ;(function traverse(mod) {
-      // Go over each of the module's children and
-      // traverse them
-      mod.children.forEach(function(child) {
-        traverse(child)
-      })
-
-      // Call the specified callback providing the
-      // found cached module
-      callback(mod)
-    })(mod)
-  }
-}
-
 function getServerFile(
-  webpackConfig: ClientServerCompiler['server']['webpackConfig'],
-  stats?: Stats,
-  options?: MiddlewareOptions
+  webpackConfig: ClientServerCompiler["server"]["webpackConfig"],
+  _options: MiddlewareOptions,
+  stats?: Stats
 ) {
   if (stats) {
     const statsJson = stats.toJson({
@@ -110,28 +67,25 @@ function getServerFile(
     return getServerAsset(statsJson)
   }
 
-  throw Object.assign(new Error('Could not find server file!'), {
+  throw Object.assign(new Error("Could not find server file!"), {
     hideStack: true
   })
 }
 
-function loadExports(
+function loadMemoryExports(
   compiler: ClientServerCompiler,
-  options?: MiddlewareOptions
+  options: MiddlewareOptions
 ) {
   const { webpackConfig, webpackCompiler } = compiler.server
-  const {
-    webpackConfig: webpackClientConfig,
-    webpackCompiler: webpackClientCompiler
-  } = compiler.client
+  const { webpackCompiler: webpackClientCompiler } = compiler.client
 
   const serverFile = getServerFile(
     webpackConfig,
-    compiler.getCompilation().serverStats,
-    options
+    options,
+    compiler.getCompilation().serverStats
   )
   const serverFilePath = `${
-    webpackConfig.output ? webpackConfig.output.path : ''
+    webpackConfig.output ? webpackConfig.output.path : ""
   }/${serverFile}`
 
   const serverFS = webpackCompiler.outputFileSystem
@@ -150,51 +104,67 @@ function loadExports(
     )
 
     if (fileExists) {
-      const serverBundle = require(serverFilePath)
+      // Decache old require
+      decache(serverFilePath)
 
-      return {
-        bundle: require(serverFilePath),
-        purge: () => purgeCache(serverFilePath)
-      }
+      return require(serverFilePath)
     }
-  } catch (e) {
-    console.log(e)
+  } catch (err) {
+    err.detail =
+      "The error above was thrown while trying to load the built server file from memory:\n"
+    err.detail += "The PATH: " + serverFilePath
+    throw err
   }
+}
 
+function loadExports(
+  compiler: ClientServerCompiler,
+  options: MiddlewareOptions
+) {
+  const { webpackConfig, webpackCompiler } = compiler.server
 
+  const serverFile = getServerFile(
+    webpackConfig,
+    options,
+    compiler.getCompilation().serverStats
+  )
+  const serverFilePath = `${
+    webpackConfig.output ? webpackConfig.output.path : ""
+  }/${serverFile}`
 
-  // return new Promise((res, rej) => {
-    
+  return new Promise((res, rej) => {
+    const fileExists = ((webpackCompiler.outputFileSystem as unknown) as IFs).existsSync(
+      serverFilePath
+    )
 
-  //   if (fileExists) {
-  //     ;((webpackCompiler.outputFileSystem as unknown) as IFs).readFile(
-  //       serverFilePath,
-  //       (err, buffer) => {
-  //         if (err) {
-  //           rej(err)
-  //         } else if (buffer) {
-  //           if (require.cache[serverFilePath]) {
-  //             purgeCache(serverFilePath)
-
-  //             compiler.emit('invalidate-require')
-  //           }
-  //         }
-  //       }
-  //     )
-  //   }
-  // })
-  //   .then(() => require(serverFilePath))
-  //   .catch(err => {
-  //     err.detail =
-  //       'The error above was thrown while trying to load the built server file:\n'
-  //     err.detail += 'The PATH: ' + serverFilePath
-  //     throw err
-  //   })
+    if (fileExists) {
+      ;((webpackCompiler.outputFileSystem as unknown) as IFs).readFile(
+        serverFilePath,
+        (err, buffer) => {
+          if (err) {
+            rej(err)
+          } else if (buffer) {
+            res(buffer.toString())
+          }
+        }
+      )
+    }
+  })
+    .then(source => {
+      decache(serverFilePath)
+      return requireFromString(source, serverFilePath)
+    })
+    .catch(err => {
+      err.detail =
+        "The error above was thrown while trying to load the built server file:\n"
+      err.detail += "The PATH: " + serverFilePath
+      throw err
+    })
 }
 
 export function resolveCompilation(
   compiler: ClientServerCompiler,
-  options?: MiddlewareOptions
+  options: MiddlewareOptions
 ) {
   let promise: any
 
@@ -202,19 +172,24 @@ export function resolveCompilation(
     compiler
       .resolve()
       .then(compilation => {
-        return loadExports(compiler, options)
-        // if (promise && promise.compilation === compilation) {
-        //   return promise
-        // }
+        if (options && options.inMemoryFilesystem) {
+          return {
+            compilation,
+            bundle: loadMemoryExports(compiler, options)
+          }
+        }
+        if (promise && promise.compilation === compilation) {
+          return promise
+        }
 
-        // promise = pProps({
-        //   // @ts-ignore
-        //   compilation,
-        //   bundle: loadExports(compiler, options)
-        // })
-        // promise.compilation = compilation
+        promise = pProps({
+          // @ts-ignore
+          compilation,
+          bundle: loadExports(compiler, options)
+        })
+        promise.compilation = compilation
 
-        // return promise
+        return promise
       })
       .catch(e => console.log(e))
 }

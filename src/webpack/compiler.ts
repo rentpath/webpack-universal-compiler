@@ -1,15 +1,15 @@
-import webpack, { Compiler } from 'webpack'
-import assert from 'assert'
+import webpack, { Compiler } from "webpack"
+import assert from "assert"
 
-import { observeWebpackCompiler } from './compiler-observer'
+import { observeWebpackCompiler } from "./compiler-observer"
 
-import { nodeFs } from '../helpers/node-fs'
-import { wrap } from '../helpers/fp-functions'
+import { nodeFs } from "../helpers/node-fs"
+import { wrap } from "../helpers/fp-functions"
 
 function preventOriginalAPIDirectUsage(
   compiler: ReturnType<typeof simpleWebpackCompiler>
 ) {
-  const blacklistedMethods = ['run', 'watch']
+  const blacklistedMethods = ["run", "watch"]
 
   compiler.webpackCompiler = new Proxy(compiler.webpackCompiler, {
     get(target, property: keyof Compiler) {
@@ -28,9 +28,9 @@ export function simpleWebpackCompiler(
   webpackType: webpack.Compiler | webpack.Configuration
 ) {
   const webpackCompiler =
-    'run' in webpackType ? webpackType : webpack(webpackType)
+    "run" in webpackType ? webpackType : webpack(webpackType)
   const webpackConfig =
-    'run' in webpackType ? webpackCompiler.options : webpackType
+    "run" in webpackType ? webpackCompiler.options : webpackType
 
   const { eventEmitter, state, addHook } = observeWebpackCompiler(
     webpackCompiler
@@ -59,15 +59,15 @@ export function simpleWebpackCompiler(
         reason +
         (calledMethod
           ? `, you can only call '${calledMethod}' when the compiler is idle`
-          : '')
+          : "")
 
-      assert(!state.webpackWatching, getAssertMessage('Compiler is watching'))
-      assert(!state.isCompiling, getAssertMessage('Compiler is running'))
+      assert(!state.webpackWatching, getAssertMessage("Compiler is watching"))
+      assert(!state.isCompiling, getAssertMessage("Compiler is running"))
     },
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     run(_args?: any) {
-      compiler.assertIdle('run')
+      compiler.assertIdle("run")
 
       return new Promise((resolve, reject) => {
         webpackCompiler.run(() => {
@@ -90,14 +90,14 @@ export function simpleWebpackCompiler(
         }
       ) => void
     ) {
-      compiler.assertIdle('watch')
+      compiler.assertIdle("watch")
 
-      if (typeof options === 'function') {
+      if (typeof options === "function") {
         handler = options
         options = {}
       }
 
-      if (typeof handler === 'undefined') {
+      if (typeof handler === "undefined") {
         handler = () => {}
       }
 
@@ -123,7 +123,7 @@ export function simpleWebpackCompiler(
           return
         }
 
-        eventEmitter.emit('invalidate')
+        eventEmitter.emit("invalidate")
         state.webpackWatching.invalidate()
       }
     },
@@ -135,7 +135,7 @@ export function simpleWebpackCompiler(
       }
 
       return new Promise(resolve => {
-        addHook('watchClose', resolve)
+        addHook("watchClose", resolve)
         state.webpackWatching && state.webpackWatching.close(() => {})
       })
     },
@@ -165,8 +165,8 @@ export function simpleWebpackCompiler(
       })
 
       const cleanup = () => {
-        eventEmitter.removeListener('error', onError)
-        eventEmitter.removeListener('end', onEnd)
+        eventEmitter.removeListener("error", onError)
+        eventEmitter.removeListener("end", onEnd)
       }
 
       const onError = (err: webpack.Stats) => {
@@ -185,7 +185,7 @@ export function simpleWebpackCompiler(
         }
       }
 
-      compiler.on('error', onError).on('end', onEnd)
+      compiler.on("error", onError).on("end", onEnd)
 
       return deferred.promise
     }
