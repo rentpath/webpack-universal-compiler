@@ -6,9 +6,9 @@ import { MiddlewareOptions } from "../types/middleware"
 
 export function compilationMiddleware(
   compiler: ClientServerCompiler,
-  _options: MiddlewareOptions
+  options: MiddlewareOptions
 ) {
-  const resolvedCompile = resolveCompilation(compiler, {})
+  const resolvedCompile = resolveCompilation(compiler, options)
 
   return (req: Request, res: Response, next: NextFunction) => {
     resolvedCompile()

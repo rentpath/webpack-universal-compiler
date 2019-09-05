@@ -1,8 +1,10 @@
 /* eslint-disable @typescript-eslint/ban-ts-ignore */
 import fs from "fs"
+import { resolve, dirname } from "path"
 import decache from "decache"
 import { Stats } from "webpack"
 import { IFs } from "memfs"
+import callsite from "callsite"
 import { patchRequire, patchFs } from "fs-monkey"
 // @ts-ignore
 import { requireFromString } from "require-from-memory"
@@ -15,6 +17,10 @@ import { MiddlewareOptions } from "../types/middleware"
 
 const ofs = {
   ...fs
+}
+
+const requireState = {
+  loaded: false
 }
 
 const getServerAsset = (stats: Stats.ToJsonOutput) => {
@@ -72,6 +78,24 @@ function getServerFile(
   })
 }
 
+function requireFind(moduleName: string) {
+  if (moduleName[0] === ".") {
+    const stack = callsite()
+    for (const i in stack) {
+      const filename = stack[i].getFileName()
+      if (filename !== module.filename) {
+        moduleName = resolve(dirname(filename), moduleName)
+        break
+      }
+    }
+  }
+  try {
+    return require.resolve(moduleName)
+  } catch (e) {
+    return
+  }
+}
+
 function loadMemoryExports(
   compiler: ClientServerCompiler,
   options: MiddlewareOptions
@@ -102,10 +126,16 @@ function loadMemoryExports(
     const fileExists = ((webpackCompiler.outputFileSystem as unknown) as IFs).existsSync(
       serverFilePath
     )
+    const foundStack = requireFind(serverFilePath)
+
+    if (foundStack && requireState.loaded) {
+      decache(serverFilePath)
+
+      requireState.loaded = false
+    }
 
     if (fileExists) {
-      // Decache old require
-      decache(serverFilePath)
+      requireState.loaded = true
 
       return require(serverFilePath)
     }
@@ -138,6 +168,13 @@ function loadExports(
     )
 
     if (fileExists) {
+      const foundStack = requireFind(serverFilePath)
+
+      if (foundStack && requireState.loaded) {
+        decache(serverFilePath)
+
+        requireState.loaded = false
+      }
       ;((webpackCompiler.outputFileSystem as unknown) as IFs).readFile(
         serverFilePath,
         (err, buffer) => {
@@ -151,7 +188,7 @@ function loadExports(
     }
   })
     .then(source => {
-      decache(serverFilePath)
+      requireState.loaded = true
       return requireFromString(source, serverFilePath)
     })
     .catch(err => {
