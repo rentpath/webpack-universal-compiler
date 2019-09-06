@@ -1,18 +1,20 @@
 import chalk from "chalk"
 import { EventEmitter } from "events"
-import webpack from "webpack"
-import { Tapable } from "tapable"
+import webpack, { compilation } from "webpack"
 
 import { statsToStringOptions } from "../const"
 import { wrap } from "../helpers/fp-functions"
 import { ObserveWebpackCompilerState } from "../types/compiler"
 
+type AnyFunction = (...args: any[]) => any
+type FunctionOrTap = AnyFunction | "tap" | "tapAsync"
+
 const createAddHook = (webpackCompiler: webpack.Compiler) => <
-  Name extends keyof typeof webpackCompiler.hooks
+  Name extends keyof compilation.CompilerHooks
 >(
   name: Name,
-  method: "tap" | "tapAsync" | Tapable.Handler,
-  callback?: Tapable.Handler
+  method: FunctionOrTap,
+  callback?: any
 ) => {
   if (typeof method === "function") {
     callback = method
@@ -20,9 +22,10 @@ const createAddHook = (webpackCompiler: webpack.Compiler) => <
   }
 
   if (webpackCompiler.hooks) {
-    webpackCompiler.hooks[name][method]("simple-compiler", (...args) => {
-      return (callback as Tapable.Handler)(...args)
-    })
+    webpackCompiler.hooks[name][method](
+      "simple-compiler",
+      <T extends any[]>(...args: T) => callback(...args)
+    )
   }
 }
 
@@ -114,7 +117,7 @@ export function observeWebpackCompiler(webpackCompiler: webpack.Compiler) {
     }
   )
 
-  addHook("failed", error => {
+  addHook("failed", (error: webpack.Stats) => {
     Object.assign(state, { isCompiling: false, error, compilation: null })
     eventEmitter.emit("error", error)
   })
