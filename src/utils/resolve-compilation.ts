@@ -28,9 +28,17 @@ const getServerAsset = (stats: Stats.ToJsonOutput) => {
     const entrypoint = Object.keys(stats.entrypoints)[0]
 
     if (stats.assetsByChunkName) {
-      const serverFileName = [stats.assetsByChunkName[entrypoint]].find(asset =>
-        /\.js$/.test((asset as unknown) as string)
-      )
+      let serverFileName
+      if (Array.isArray(stats.assetsByChunkName[entrypoint])) {
+        const serverEntryAsArray = (stats.assetsByChunkName[
+          entrypoint
+        ] as unknown) as string[]
+        serverFileName = serverEntryAsArray.find(asset => /\.js$/.test(asset))
+      } else {
+        serverFileName = [stats.assetsByChunkName[entrypoint]].find(asset =>
+          /\.js$/.test((asset as unknown) as string)
+        )
+      }
 
       if (serverFileName) {
         return serverFileName
@@ -73,9 +81,7 @@ function getServerFile(
     return getServerAsset(statsJson)
   }
 
-  throw Object.assign(new Error("Could not find server file!"), {
-    hideStack: true
-  })
+  return false
 }
 
 function requireFind(moduleName: string) {
@@ -108,6 +114,11 @@ function loadMemoryExports(
     options,
     compiler.getCompilation().serverStats
   )
+
+  if (!serverFile) {
+    return false
+  }
+
   const serverFilePath = `${
     webpackConfig.output ? webpackConfig.output.path : ""
   }/${serverFile}`
@@ -158,6 +169,11 @@ function loadExports(
     options,
     compiler.getCompilation().serverStats
   )
+
+  if (!serverFile) {
+    return Promise.resolve(undefined)
+  }
+
   const serverFilePath = `${
     webpackConfig.output ? webpackConfig.output.path : ""
   }/${serverFile}`
@@ -228,5 +244,5 @@ export function resolveCompilation(
 
         return promise
       })
-      .catch(e => console.log(e))
+      .catch(e => console.log("Error in LoadExports()", e))
 }

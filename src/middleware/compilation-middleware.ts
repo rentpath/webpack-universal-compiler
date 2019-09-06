@@ -13,7 +13,9 @@ export function compilationMiddleware(
   return (req: Request, res: Response, next: NextFunction) => {
     resolvedCompile()
       .then(compilation => {
-        res.locals.universal = compilation
+        if (compilation && compilation.bundle) {
+          res.locals.universal = compilation
+        }
       })
       .then(next, next)
       .catch(e => console.log(e))
