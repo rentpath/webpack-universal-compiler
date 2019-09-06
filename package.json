@@ -3,6 +3,7 @@
   "version": "1.0.6",
   "main": "lib/middleware.js",
   "author": "Daniil Veremchuk <daniel@verydanny.com>",
+  "description": "Library that creates a hot reloadable client and server webpack instance for universal (SSR) apps.",
   "scripts": {
     "clean:commonjs": "rm -rf lib && rm -rf es",
     "clean:es": "rm -rf es",
@@ -14,6 +15,20 @@
     "lint": "yarn eslint ./src/**/*",
     "lint:fix": "yarn eslint ./src/**/* --fix"
   },
+  "bugs": {
+    "url": "https://github.com/rentpath/webpack-universal-compiler/issues"
+  },
+  "homepage": "https://github.com/rentpath/webpack-universal-compiler",
+  "keywords": [
+    "webpack",
+    "react",
+    "SSR",
+    "universal",
+    "react universal",
+    "server side render",
+    "server rendering",
+    "webpack universal"
+  ],
   "files": [
     "lib",
     "es",
