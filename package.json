@@ -1,6 +1,6 @@
 {
   "name": "webpack-universal-compiler",
-  "version": "1.0.7",
+  "version": "1.1.0",
   "main": "lib/middleware.js",
   "author": "Daniil Veremchuk <daniel@verydanny.com>",
   "description": "Library that creates a hot reloadable client and server webpack instance for universal (SSR) apps.",
@@ -13,7 +13,8 @@
     "compile:es:commonjs": "yarn compile:commonjs && yarn compile:es",
     "tsc:declarationsOnly": "clean && tsc --declaration --emitDeclarationOnly -p ./",
     "lint": "yarn eslint ./src/**/*",
-    "lint:fix": "yarn eslint ./src/**/* --fix"
+    "lint:fix": "yarn eslint ./src/**/* --fix",
+    "prepublishOnly": "yarn lint && yarn compile:es:commonjs"
   },
   "bugs": {
     "url": "https://github.com/rentpath/webpack-universal-compiler/issues"
