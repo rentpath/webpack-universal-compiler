@@ -103,6 +103,7 @@ export function observeIsomorphicCompilers(
       Object.assign(state, {
         isCompiling: false,
         error: null,
+        eitherError: null,
         compilation
       })
       eventEmitter.emit("end", compilation)

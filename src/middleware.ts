@@ -4,6 +4,7 @@ import webpackHotMiddleware from "webpack-hot-middleware"
 import { compose } from "compose-middleware"
 import { compilationMiddleware } from "./middleware/compilation-middleware"
 import { devMiddleware } from "./middleware/dev-middleware"
+import { reportErrorMiddleware } from "./middleware/report-error-middleware"
 import { clientServerCompiler } from "./webpack-universal/universal-compiler"
 import { startReportingWebpackIsomorphic } from "./webpack-universal/universal-compiler-reporter"
 import { simpleWebpackCompiler } from "./webpack/compiler"
@@ -129,7 +130,8 @@ function webpackClientServerMiddleware(
 
   const middleware = [
     compilationMiddleware(compiler, options),
-    devMiddleware(compiler, options)
+    devMiddleware(compiler, options),
+    reportErrorMiddleware(compiler, options)
   ]
 
   if (options.hot) {

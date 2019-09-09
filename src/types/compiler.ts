@@ -50,6 +50,7 @@ export interface ObserveWebpackCompilerState {
 export interface ObserveWebpackIsoCompilerState
   extends ObserveWebpackCompilerState {
   beginAt: null | ReturnType<typeof Date.now>
+  eitherError?: ErrWithStats
   compilation: {
     duration?: number
     clientStats?: webpack.Stats
@@ -68,6 +69,7 @@ export interface CompilerStub {
 
 export interface ErrWithStats extends NodeJS.ErrnoException {
   stats: webpack.Stats
+  detail?: string
 }
 
 export type SimpleCompiler = ReturnType<typeof simpleWebpackCompiler>

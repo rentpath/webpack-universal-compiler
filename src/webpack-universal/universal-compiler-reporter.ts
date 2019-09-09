@@ -7,12 +7,12 @@ import { startReportingWebpack } from "../webpack/compiler-reporter"
 
 import { ReporterOptionsIsomorphicCompiler } from "../types/compiler"
 
-const extraSymbols = {
+export const extraSymbols = {
   ...symbols,
   separator: process.platform !== "win32" ? "━" : "-"
 }
 
-const extraRenderers = {
+export const extraRenderers = {
   ...renderers,
   banner: (label: string) => {
     let str: string

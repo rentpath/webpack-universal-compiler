@@ -18,6 +18,8 @@ export function compilationMiddleware(
         }
       })
       .then(next, next)
-      .catch(e => console.log(e))
+      .catch(e => {
+        throw e
+      })
   }
 }

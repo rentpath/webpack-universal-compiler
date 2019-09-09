@@ -54,7 +54,7 @@ const getServerAsset = (stats: Stats.ToJsonOutput) => {
     })
   }
 
-  throw Object.assign(new Error("No Entrypoint!"), {
+  throw Object.assign(new Error("No entrypoint in stats!"), {
     hideStack: true
   })
 }
@@ -81,7 +81,9 @@ function getServerFile(
     return getServerAsset(statsJson)
   }
 
-  return false
+  throw Object.assign(new Error("Coudldn't find server entry JS file!"), {
+    hideStack: true
+  })
 }
 
 function requireFind(moduleName: string) {
@@ -116,7 +118,7 @@ function loadMemoryExports(
   )
 
   if (!serverFile) {
-    return false
+    throw Error("No server file, maybe it didn't compile?")
   }
 
   const serverFilePath = `${
@@ -244,5 +246,7 @@ export function resolveCompilation(
 
         return promise
       })
-      .catch(e => console.log("Error in LoadExports()", e))
+      .catch(e => {
+        throw e
+      })
 }
