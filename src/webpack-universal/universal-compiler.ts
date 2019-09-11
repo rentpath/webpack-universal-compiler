@@ -3,7 +3,8 @@ import webpack from "webpack"
 import { wrap } from "../helpers/fp-functions"
 import { webpackConfigValidator } from "../helpers/webpack-config-sort"
 import { pSettle } from "../utils/p-utils"
-import { simpleWebpackCompiler } from "../webpack/compiler"
+import { simpleCompiler } from "../webpack/compiler"
+import { SimpleCompiler } from "../types/compiler"
 
 import {
   observeIsomorphicCompilers,
@@ -11,14 +12,12 @@ import {
 } from "./universal-compiler-observer"
 import { ObserveWebpackIsoCompilerState, ErrWithStats } from "../types/compiler"
 
-const createSubFacade = (
-  compiler: ReturnType<typeof simpleWebpackCompiler>
-) => ({
+const createSubFacade = (compiler: SimpleCompiler) => ({
   webpackConfig: compiler.webpackConfig,
   webpackCompiler: compiler.webpackCompiler
 })
 
-export function clientServerCompiler(
+export function universalCompiler(
   client: webpack.Compiler | webpack.Configuration,
   server: webpack.Compiler | webpack.Configuration
 ) {
@@ -26,8 +25,8 @@ export function clientServerCompiler(
     throw new TypeError("Incorrect Configuration")
   }
 
-  const clientCompiler = simpleWebpackCompiler(client)
-  const serverCompiler = simpleWebpackCompiler(server)
+  const clientCompiler = simpleCompiler(client)
+  const serverCompiler = simpleCompiler(server)
   const { eventEmitter, state } = observeIsomorphicCompilers(
     clientCompiler,
     serverCompiler

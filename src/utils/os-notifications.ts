@@ -5,7 +5,7 @@ import stripAnsi from "strip-ansi"
 import renderers from "../helpers/renderers"
 
 import {
-  ClientServerCompiler,
+  UniversalCompiler,
   SimpleCompiler,
   ErrWithStats
 } from "../types/compiler"
@@ -45,7 +45,7 @@ function createNotifier({ title, icon, sound }: NotifierOptions) {
 }
 
 export function startNotifying(
-  compiler: ClientServerCompiler | SimpleCompiler,
+  compiler: UniversalCompiler | SimpleCompiler,
   options: NotifierOptions
 ) {
   options = {

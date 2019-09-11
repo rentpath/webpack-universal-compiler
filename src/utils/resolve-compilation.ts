@@ -12,7 +12,7 @@ import { ufs } from "unionfs"
 
 import { pProps } from "../utils/p-utils"
 
-import { ClientServerCompiler } from "../types/compiler"
+import { UniversalCompiler } from "../types/compiler"
 import { MiddlewareOptions } from "../types/middleware"
 
 const ofs = {
@@ -60,7 +60,7 @@ const getServerAsset = (stats: Stats.ToJsonOutput) => {
 }
 
 function getServerFile(
-  webpackConfig: ClientServerCompiler["server"]["webpackConfig"],
+  _webpackConfig: UniversalCompiler["server"]["webpackConfig"],
   _options: MiddlewareOptions,
   stats?: Stats
 ) {
@@ -105,7 +105,7 @@ function requireFind(moduleName: string) {
 }
 
 function loadMemoryExports(
-  compiler: ClientServerCompiler,
+  compiler: UniversalCompiler,
   options: MiddlewareOptions
 ) {
   const { webpackConfig, webpackCompiler } = compiler.server
@@ -160,10 +160,7 @@ function loadMemoryExports(
   }
 }
 
-function loadExports(
-  compiler: ClientServerCompiler,
-  options: MiddlewareOptions
-) {
+function loadExports(compiler: UniversalCompiler, options: MiddlewareOptions) {
   const { webpackConfig, webpackCompiler } = compiler.server
 
   const serverFile = getServerFile(
@@ -218,7 +215,7 @@ function loadExports(
 }
 
 export function resolveCompilation(
-  compiler: ClientServerCompiler,
+  compiler: UniversalCompiler,
   options: MiddlewareOptions
 ) {
   let promise: any

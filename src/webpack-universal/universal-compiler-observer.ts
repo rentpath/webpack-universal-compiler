@@ -1,11 +1,10 @@
 import chalk from "chalk"
 import { EventEmitter } from "events"
 
-import { simpleWebpackCompiler } from "../webpack/compiler"
-
-import { ObserveWebpackIsoCompilerState } from "../types/compiler"
-
-type Compiler = ReturnType<typeof simpleWebpackCompiler>
+import {
+  ObserveWebpackIsoCompilerState,
+  SimpleCompiler
+} from "../types/compiler"
 
 export const resetState = (state = {}) => {
   return Object.assign(state, {
@@ -23,8 +22,8 @@ export const resetState = (state = {}) => {
   })
 }
 export function observeIsomorphicCompilers(
-  clientCompiler: Compiler,
-  serverCompiler: Compiler
+  clientCompiler: SimpleCompiler,
+  serverCompiler: SimpleCompiler
 ) {
   const eventEmitter = new EventEmitter()
   const state: ObserveWebpackIsoCompilerState = resetState({})

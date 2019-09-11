@@ -1,7 +1,7 @@
 import chalk from "chalk"
 
 import {
-  ClientServerCompiler,
+  UniversalCompiler,
   ReporterOptionsIsomorphicCompiler,
   CompilationStats
 } from "../types/compiler"
@@ -86,7 +86,7 @@ If you feel this was a false positive, please ignore this warning.
   return true
 }
 
-export function checkHashes(compiler: ClientServerCompiler, options: Reporter) {
+export function checkHashes(compiler: UniversalCompiler, options: Reporter) {
   compiler.once("end", (compilation: CompilationStats) => {
     if (!verifyAssets(compilation, options)) {
       compiler.once("end", compilation => verifyAssets(compilation, options))

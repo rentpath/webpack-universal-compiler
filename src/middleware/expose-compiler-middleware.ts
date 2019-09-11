@@ -1,10 +1,10 @@
 import { Request, Response, NextFunction } from "express"
 
-import { ClientServerCompiler } from "../types/compiler"
+import { UniversalCompiler } from "../types/compiler"
 import { MiddlewareOptions } from "../types/middleware"
 
 export const exposeCompilerMiddleware = (
-  compiler: ClientServerCompiler,
+  compiler: UniversalCompiler,
   _options: MiddlewareOptions
 ) => {
   return (res: Response, _req: Request, _next: NextFunction) => {

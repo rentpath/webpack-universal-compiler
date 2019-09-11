@@ -1,6 +1,8 @@
 /* eslint-disable @typescript-eslint/ban-ts-ignore */
 import { Volume, createFsFromVolume } from "memfs"
 import { CompilerStub } from "../types/compiler"
+// JOIN should be deprecated!! Does not exist in fs. This
+// is webpack team issue.
 import join from "memory-fs/lib/join"
 
 export function buildInMemoryFileSystem(

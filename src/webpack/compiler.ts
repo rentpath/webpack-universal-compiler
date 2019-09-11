@@ -1,14 +1,11 @@
 import webpack, { Compiler } from "webpack"
 import assert from "assert"
-
 import { observeWebpackCompiler } from "./compiler-observer"
-
 import { nodeFs } from "../helpers/node-fs"
 import { wrap } from "../helpers/fp-functions"
+import { SimpleCompiler } from "../types/compiler"
 
-function preventOriginalAPIDirectUsage(
-  compiler: ReturnType<typeof simpleWebpackCompiler>
-) {
+function preventOriginalAPIDirectUsage(compiler: SimpleCompiler) {
   const blacklistedMethods = ["run", "watch"]
 
   compiler.webpackCompiler = new Proxy(compiler.webpackCompiler, {
@@ -24,7 +21,7 @@ function preventOriginalAPIDirectUsage(
   })
 }
 
-export function simpleWebpackCompiler(
+export function simpleCompiler(
   webpackType: webpack.Compiler | webpack.Configuration
 ) {
   const webpackCompiler =

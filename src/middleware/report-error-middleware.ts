@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express"
 import { ansiToHtml, escapeForHtml } from "anser"
 import { extraRenderers } from "../webpack-universal/universal-compiler-reporter"
-import { ClientServerCompiler } from "../types/compiler"
+import { UniversalCompiler } from "../types/compiler"
 import { MiddlewareOptions } from "../types/middleware"
 
 const createHtml = (message: string) => {
@@ -50,10 +50,10 @@ const createHtml = (message: string) => {
 }
 
 export function reportErrorMiddleware(
-  compiler: ClientServerCompiler,
+  _compiler: UniversalCompiler,
   options: MiddlewareOptions
 ) {
-  return (err: any, req: Request, res: Response, next: NextFunction) => {
+  return (err: any, _req: Request, res: Response, _next: NextFunction) => {
     let message = extraRenderers.error(err)
 
     if (err.detail) {

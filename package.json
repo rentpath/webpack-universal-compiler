@@ -1,7 +1,8 @@
 {
   "name": "webpack-universal-compiler",
   "version": "1.1.0",
-  "main": "lib/middleware.js",
+  "main": "lib/exports.js",
+  "module": "es/exports.js",
   "author": "Daniil Veremchuk <daniel@verydanny.com>",
   "description": "Library that creates a hot reloadable client and server webpack instance for universal (SSR) apps.",
   "scripts": {

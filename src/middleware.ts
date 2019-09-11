@@ -5,9 +5,8 @@ import { compose } from "compose-middleware"
 import { compilationMiddleware } from "./middleware/compilation-middleware"
 import { devMiddleware } from "./middleware/dev-middleware"
 import { reportErrorMiddleware } from "./middleware/report-error-middleware"
-import { clientServerCompiler } from "./webpack-universal/universal-compiler"
+import { universalCompiler } from "./webpack-universal/universal-compiler"
 import { startReportingWebpackIsomorphic } from "./webpack-universal/universal-compiler-reporter"
-import { simpleWebpackCompiler } from "./webpack/compiler"
 import { startNotifying } from "./utils/os-notifications"
 import { checkHashes } from "./utils/check-hashes"
 import { MiddlewareOptions } from "./types/middleware"
@@ -18,7 +17,6 @@ import {
   isMultiConfig,
   isSingleConfiguration
 } from "./types/type-guards"
-import { buildInMemoryFileSystem } from "./utils/build-filesystem"
 import { NotifierOptions } from "./utils/os-notifications"
 
 function parseOptions(options: MiddlewareOptions) {
@@ -50,14 +48,14 @@ function parseArgs(
 
   if (isMultiCompiler(argOne) && isMiddlewareOptions(argTwo)) {
     return {
-      compiler: clientServerCompiler(argOne.compilers[0], argOne.compilers[1]),
+      compiler: universalCompiler(argOne.compilers[0], argOne.compilers[1]),
       options: parseOptions(argTwo)
     }
   }
 
   if (isMultiConfig(argOne) && isMiddlewareOptions(argTwo)) {
     return {
-      compiler: clientServerCompiler(argOne[0], argOne[1]),
+      compiler: universalCompiler(argOne[0], argOne[1]),
       options: parseOptions(argTwo)
     }
   }
@@ -68,7 +66,7 @@ function parseArgs(
     isMiddlewareOptions(argThree)
   ) {
     return {
-      compiler: clientServerCompiler(argOne, argTwo),
+      compiler: universalCompiler(argOne, argTwo),
       options: parseOptions(argThree)
     }
   }
@@ -79,7 +77,7 @@ function parseArgs(
     isMiddlewareOptions(argThree)
   ) {
     return {
-      compiler: clientServerCompiler(argOne, argTwo),
+      compiler: universalCompiler(argOne, argTwo),
       options: parseOptions(argThree)
     }
   }
@@ -99,7 +97,7 @@ function parseArgs(
   throw new TypeError("Config Error")
 }
 
-function webpackClientServerMiddleware(
+export function universalMiddleware(
   ...args: [
     (MultiCompiler | Compiler | Configuration | [Configuration, Configuration]),
     (Configuration | Compiler | MiddlewareOptions)?,
@@ -109,7 +107,10 @@ function webpackClientServerMiddleware(
   const { compiler, options } = parseArgs(args)
 
   if (options.inMemoryFilesystem) {
-    buildInMemoryFileSystem(compiler.client, compiler.server)
+    require("./utils/build-filesystem").buildInMemoryFileSystem(
+      compiler.client,
+      compiler.server
+    )
   }
 
   if (typeof options.report !== "undefined" && options.report !== false) {
@@ -145,10 +146,4 @@ function webpackClientServerMiddleware(
   return Object.assign(compose(middleware), {
     compiler
   })
-}
-
-export {
-  clientServerCompiler,
-  webpackClientServerMiddleware,
-  simpleWebpackCompiler
 }

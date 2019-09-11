@@ -6,7 +6,7 @@ import webpackDevMiddleware, {
 } from "webpack-dev-middleware"
 
 import { MiddlewareOptions } from "../types/middleware"
-import { ClientServerCompiler } from "../types/compiler"
+import { UniversalCompiler } from "../types/compiler"
 
 type HandlerFunc = (stats: Stats) => void
 
@@ -18,10 +18,10 @@ function createStubbedWebpackCompiler(webpackCompiler: Compiler) {
   const stubbedWebpackCompilerHooks = new Proxy(
     {},
     {
-      get(target, property) {
+      get(_target, property) {
         if (property === "done") {
           return {
-            tap: (name: string, handler: HandlerFunc) =>
+            tap: (_name: string, handler: HandlerFunc) =>
               doneHandlers.push(handler)
           }
         }
@@ -64,7 +64,7 @@ function createStubbedWebpackCompiler(webpackCompiler: Compiler) {
 }
 
 export function devMiddleware(
-  compiler: ClientServerCompiler,
+  compiler: UniversalCompiler,
   options: MiddlewareOptions
 ) {
   const { webpackCompiler, webpackConfig } = compiler.client

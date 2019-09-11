@@ -1,6 +1,6 @@
 import webpack from "webpack"
-import { simpleWebpackCompiler } from "../webpack/compiler"
-import { clientServerCompiler } from "../webpack-universal/universal-compiler"
+import { simpleCompiler } from "../webpack/compiler"
+import { universalCompiler } from "../webpack-universal/universal-compiler"
 
 /// <reference types="node" />
 /// <reference types="webpack" />
@@ -72,5 +72,5 @@ export interface ErrWithStats extends NodeJS.ErrnoException {
   detail?: string
 }
 
-export type SimpleCompiler = ReturnType<typeof simpleWebpackCompiler>
-export type ClientServerCompiler = ReturnType<typeof clientServerCompiler>
+export type SimpleCompiler = ReturnType<typeof simpleCompiler>
+export type UniversalCompiler = ReturnType<typeof universalCompiler>
