@@ -351,8 +351,10 @@ Injects the hot-dev-middleware into final list of middleware. You must set clien
 Headers to provide to the `webpack-dev-middleware`. 
 
 
+## Credits
 
-
-
+- Moxy Studios - [webpack-isomorphic-dev-middleware](https://github.com/moxystudio/webpack-isomorphic-dev-middleware)
+<br>
+- Webpack Team - [webpack](https://github.com/webpack)
 
 
