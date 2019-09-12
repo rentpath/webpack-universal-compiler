@@ -53,6 +53,10 @@ export function universalCompiler(
       serverCompiler.assertIdle("run")
 
       return pSettle([clientCompiler.run(), serverCompiler.run()]).then(() => {
+        if (state.eitherError) {
+          throw state.eitherError
+        }
+
         if (state.error) {
           throw state.error
         }
