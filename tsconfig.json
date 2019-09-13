@@ -4,7 +4,7 @@
 		"module": "commonjs",
 		"outDir": "lib",
 		"lib": [
-			"es2019"
+			"esnext"
 		],
     "jsx": "react",
 		"sourceMap": true,
@@ -19,7 +19,7 @@
 		"strictFunctionTypes": false,
 		"skipLibCheck": true,
 		"esModuleInterop": true,
-		"moduleResolution": "node",
+		"moduleResolution": "node"
 	},
 	"exclude": [
 		"node_modules",

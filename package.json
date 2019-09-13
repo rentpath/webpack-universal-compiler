@@ -62,7 +62,9 @@
     "yargs": "^14.0.0"
   },
   "peerDependencies": {
-    "webpack": ">= 4.15.0"
+    "webpack": ">= 4.20.0",
+    "webpack-dev-middleware": ">= 3.0.0",
+    "webpack-hot-middleware": ">= 2.20.0"
   },
   "dependencies": {
     "aggregate-error": "^3.0.0",
@@ -82,9 +84,6 @@
     "read-pkg-up": "^6.0.0",
     "require-from-memory": "^1.0.2",
     "strip-ansi": "^5.2.0",
-    "unionfs": "^4.2.0",
-    "webpack": "4.39.3",
-    "webpack-dev-middleware": "^3.7.1",
-    "webpack-hot-middleware": "^2.25.0"
+    "unionfs": "^4.2.0"
   }
 }
