@@ -1,12 +1,14 @@
 import { Request, Response, NextFunction } from "express"
-import { ansiToHtml, escapeForHtml } from "anser"
+import anser from "anser"
 import { extraRenderers } from "../webpack-universal/universal-compiler-reporter"
 import { UniversalCompiler } from "../types/compiler"
 import { MiddlewareOptions } from "../types/middleware"
 
 const createHtml = (message: string) => {
-  // eslint-disable-next-line @typescript-eslint/camelcase
-  const body = ansiToHtml(escapeForHtml(message), { use_classes: true })
+  const body = anser.ansiToHtml(anser.escapeForHtml(message), {
+    // eslint-disable-next-line @typescript-eslint/camelcase
+    use_classes: true
+  })
   return `<!DOCTYPE html>
       <html lang="en">
           <head>

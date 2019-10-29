@@ -19,6 +19,7 @@
 		"strictFunctionTypes": false,
 		"skipLibCheck": true,
 		"esModuleInterop": true,
+		"allowSyntheticDefaultImports": true,
 		"moduleResolution": "node"
 	},
 	"exclude": [

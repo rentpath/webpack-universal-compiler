@@ -24,8 +24,8 @@ function getDefaultTitle() {
   if (!defaultTitle) {
     const pkgUp = readPkgUp.sync()
 
-    if (pkgUp && pkgUp.package.name) {
-      defaultTitle = pkgUp.package.name
+    if (pkgUp && pkgUp.packageJson.name) {
+      defaultTitle = pkgUp.packageJson.name
     } else {
       defaultTitle = "Unknown Project"
     }
