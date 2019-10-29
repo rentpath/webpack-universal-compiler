@@ -1,6 +1,6 @@
 {
   "name": "webpack-universal-compiler",
-  "version": "1.2.3",
+  "version": "1.2.4",
   "main": "lib/exports.js",
   "module": "es/exports.js",
   "author": "Daniil Veremchuk <daniel@verydanny.com>",
