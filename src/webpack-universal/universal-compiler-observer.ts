@@ -112,7 +112,9 @@ export function observeIsomorphicCompilers(
   /**
    * NODE JS Global error fix
    */
-  eventEmitter.on("error", () => {})
+  eventEmitter.on("error", () => {
+    // void
+  })
 
   clientCompiler
     .on("begin", onBegin)

@@ -3,7 +3,9 @@ import AggregateError from "aggregate-error"
 
 export async function pFinally<T>(
   promise: Promise<T> | (() => Promise<T>),
-  onFinally: () => void = () => {}
+  onFinally: () => void = () => {
+    // void
+  }
 ) {
   let value
 
@@ -229,9 +231,9 @@ const object = async <
   mapper: Mapper<PromiseResult<ValueType>, ValueType, MappedValueType>,
   options?: PMapOptions
 ) => {
-  const awaitedEntries: IterableObject<any> = Object.entries(map).map(
-    async ([key, value]) => [key, await value]
-  )
+  const awaitedEntries: IterableObject<any> = Object.entries(
+    map
+  ).map(async ([key, value]) => [key, await value])
   const values = await pMap(
     awaitedEntries,
     ([key, value]) => mapper(value, key),
@@ -256,9 +258,9 @@ const mapAMap = async <
   mapper: Mapper<PromiseResult<ValueType>, KeyType, MappedValueType>,
   options?: PMapOptions
 ) => {
-  const awaitedEntries: IterableObject<any> = [...map.entries()].map(
-    async ([key, value]) => [key, await value]
-  )
+  const awaitedEntries: IterableObject<any> = [
+    ...map.entries()
+  ].map(async ([key, value]) => [key, await value])
   const values = await pMap(
     awaitedEntries,
     ([key, value]) => mapper(value, key),

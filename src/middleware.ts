@@ -132,12 +132,11 @@ export function universalMiddleware(
   const middleware = [
     compilationMiddleware(compiler, options),
     devMiddleware(compiler, options),
-    reportErrorMiddleware(compiler, options)
+    reportErrorMiddleware(compiler, options),
+    ...(options.hot
+      ? [webpackHotMiddleware(compiler.client.webpackCompiler)]
+      : [])
   ]
-
-  if (options.hot) {
-    middleware.push(webpackHotMiddleware(compiler.client.webpackCompiler))
-  }
 
   compiler.watch()
 

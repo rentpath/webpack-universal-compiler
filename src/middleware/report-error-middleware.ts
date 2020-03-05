@@ -65,7 +65,8 @@ export function reportErrorMiddleware(
     if (
       process.env.NODE_ENV !== "test" &&
       !(err.stats && typeof err.stats.hasErrors === "function") &&
-      (options.report && options.report.write)
+      options.report &&
+      options.report.write
     ) {
       options.report.write(`${message}\n\n`)
     }

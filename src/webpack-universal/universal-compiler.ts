@@ -112,7 +112,9 @@ export function universalCompiler(
       return Promise.all([
         clientCompiler.unwatch(),
         serverCompiler.unwatch()
-      ]).then(() => {})
+      ]).then(() => {
+        // void
+      })
     },
 
     resolve(): Promise<ObserveWebpackIsoCompilerState["compilation"]> {

@@ -41,7 +41,9 @@ export function observeWebpackCompiler(webpackCompiler: webpack.Compiler) {
   /**
    * NODE JS Global error fix
    */
-  eventEmitter.on("error", () => {})
+  eventEmitter.on("error", () => {
+    // void
+  })
 
   webpackCompiler.run = wrap(webpackCompiler.run, (run, callback) => {
     Object.assign(state, {

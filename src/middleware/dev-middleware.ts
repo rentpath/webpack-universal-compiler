@@ -27,7 +27,9 @@ function createStubbedWebpackCompiler(webpackCompiler: Compiler) {
         }
 
         return {
-          tap: () => {}
+          tap: () => {
+            // void
+          }
         }
       },
       set() {
@@ -40,7 +42,9 @@ function createStubbedWebpackCompiler(webpackCompiler: Compiler) {
   const stubbedWebpackCompiler = new Proxy(webpackCompiler, {
     get(target, property) {
       if (property === "run" || property === "watch") {
-        return () => {}
+        return () => {
+          // void
+        }
       }
 
       // The hooks API is for webpack >= v4
