@@ -32,6 +32,8 @@
     "webpack universal"
   ],
   "files": [
+    "external",
+    "types",
     "lib",
     "es",
     "webpack-logo.png"
