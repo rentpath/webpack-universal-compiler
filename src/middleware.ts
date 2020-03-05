@@ -39,7 +39,7 @@ function parseOptions(options: MiddlewareOptions) {
 
 function parseArgs(
   args: [
-    (MultiCompiler | Compiler | Configuration | [Configuration, Configuration]),
+    MultiCompiler | Compiler | Configuration | [Configuration, Configuration],
     (Configuration | Compiler | MiddlewareOptions)?,
     MiddlewareOptions?
   ]
@@ -99,7 +99,7 @@ function parseArgs(
 
 export function universalMiddleware(
   ...args: [
-    (MultiCompiler | Compiler | Configuration | [Configuration, Configuration]),
+    MultiCompiler | Compiler | Configuration | [Configuration, Configuration],
     (Configuration | Compiler | MiddlewareOptions)?,
     MiddlewareOptions?
   ]
@@ -136,9 +136,7 @@ export function universalMiddleware(
   ]
 
   if (options.hot) {
-    middleware.push(
-      webpackHotMiddleware(compiler.client.webpackCompiler, { log: false })
-    )
+    middleware.push(webpackHotMiddleware(compiler.client.webpackCompiler))
   }
 
   compiler.watch()

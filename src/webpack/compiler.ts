@@ -95,7 +95,9 @@ export function simpleCompiler(
       }
 
       if (typeof handler === "undefined") {
-        handler = () => {}
+        handler = () => {
+          // void
+        }
       }
 
       handler =
@@ -133,7 +135,10 @@ export function simpleCompiler(
 
       return new Promise(resolve => {
         addHook("watchClose", resolve)
-        state.webpackWatching && state.webpackWatching.close(() => {})
+        state.webpackWatching &&
+          state.webpackWatching.close(() => {
+            // void
+          })
       })
     },
 

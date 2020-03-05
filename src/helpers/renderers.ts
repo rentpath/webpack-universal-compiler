@@ -17,7 +17,7 @@ const defaultStatsOptions = {
   assets: true,
   children: false,
   chunks: false,
-  colors: chalk.enabled,
+  colors: true,
   hash: false,
   modules: false,
   timings: false,

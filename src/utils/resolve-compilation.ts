@@ -1,23 +1,15 @@
 /* eslint-disable @typescript-eslint/ban-ts-ignore */
-import fs from "fs"
+import * as fs from "fs"
 import { resolve, dirname } from "path"
 import decache from "decache"
 import { Stats } from "webpack"
 import { IFs } from "memfs"
 import callsite from "callsite"
-import { patchRequire, patchFs } from "fs-monkey"
-// @ts-ignore
-import { requireFromString } from "require-from-memory"
+import { patchRequire, patchFs } from "../../external/fs-monkey"
 import { ufs } from "unionfs"
-
-import { pProps } from "../utils/p-utils"
 
 import { UniversalCompiler } from "../types/compiler"
 import { MiddlewareOptions } from "../types/middleware"
-
-const ofs = {
-  ...fs
-}
 
 const requireState = {
   loaded: false
@@ -131,7 +123,7 @@ function loadMemoryExports(
   ufs
     .use(serverFS)
     .use(clientFS)
-    .use(ofs)
+    .use(fs)
   patchFs(ufs)
   patchRequire(ufs)
 
@@ -160,88 +152,18 @@ function loadMemoryExports(
   }
 }
 
-function loadExports(compiler: UniversalCompiler, options: MiddlewareOptions) {
-  const { webpackConfig, webpackCompiler } = compiler.server
-
-  const serverFile = getServerFile(
-    webpackConfig,
-    options,
-    compiler.getCompilation().serverStats
-  )
-
-  if (!serverFile) {
-    return Promise.resolve(undefined)
-  }
-
-  const serverFilePath = `${
-    webpackConfig.output ? webpackConfig.output.path : ""
-  }/${serverFile}`
-
-  return new Promise((res, rej) => {
-    const fileExists = ((webpackCompiler.outputFileSystem as unknown) as IFs).existsSync(
-      serverFilePath
-    )
-
-    if (fileExists) {
-      const foundStack = requireFind(serverFilePath)
-
-      if (foundStack && requireState.loaded) {
-        decache(serverFilePath)
-
-        requireState.loaded = false
-      }
-      ;((webpackCompiler.outputFileSystem as unknown) as IFs).readFile(
-        serverFilePath,
-        (err, buffer) => {
-          if (err) {
-            rej(err)
-          } else if (buffer) {
-            res(buffer.toString())
-          }
-        }
-      )
-    }
-  })
-    .then(source => {
-      requireState.loaded = true
-      return requireFromString(source, serverFilePath)
-    })
-    .catch(err => {
-      err.detail =
-        "The error above was thrown while trying to load the built server file:\n"
-      err.detail += "The PATH: " + serverFilePath
-      throw err
-    })
-}
-
 export function resolveCompilation(
   compiler: UniversalCompiler,
   options: MiddlewareOptions
 ) {
-  let promise: any
-
   return () =>
     compiler
       .resolve()
       .then(compilation => {
-        if (options && options.inMemoryFilesystem) {
-          return {
-            compilation,
-            bundle: loadMemoryExports(compiler, options)
-          }
-        }
-        if (promise && promise.compilation === compilation) {
-          return promise
-        }
-
-        promise = pProps({
-          // @ts-ignore
+        return {
           compilation,
-          bundle: loadExports(compiler, options)
-        })
-        promise.compilation = compilation
-
-        return promise
+          bundle: loadMemoryExports(compiler, options)
+        }
       })
       .catch(e => {
         throw e
