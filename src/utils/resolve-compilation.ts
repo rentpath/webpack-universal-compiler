@@ -1,12 +1,9 @@
 /* eslint-disable @typescript-eslint/ban-ts-ignore */
-import fs from "fs"
 import { resolve, dirname } from "path"
 import decache from "decache"
 import { Stats } from "webpack"
 import { IFs } from "memfs"
 import callsite from "callsite"
-import { patchRequire, patchFs } from "../../external/fs-monkey"
-import { ufs } from "unionfs"
 // @ts-ignore
 import { requireFromString } from "require-from-memory"
 
@@ -17,10 +14,6 @@ import { MiddlewareOptions } from "../types/middleware"
 
 const requireState = {
   loaded: false
-}
-
-const ofs = {
-  ...fs
 }
 
 const getServerAsset = (stats: Stats.ToJsonOutput) => {
@@ -127,28 +120,21 @@ function loadExports(compiler: UniversalCompiler, options: MiddlewareOptions) {
     )
 
     if (fileExists) {
-      const foundStack = requireFind(serverFilePath)
+      res(serverFilePath)
+    } else {
+      rej("No server file found!")
+    }
+  })
+    .then((source: string) => {
+      const foundStack = requireFind(source)
 
       if (foundStack && requireState.loaded) {
         decache(serverFilePath)
 
         requireState.loaded = false
       }
-      ;((webpackCompiler.outputFileSystem as unknown) as IFs).readFile(
-        serverFilePath,
-        (err, buffer) => {
-          if (err) {
-            rej(err)
-          } else if (buffer) {
-            res(buffer.toString())
-          }
-        }
-      )
-    }
-  })
-    .then(source => {
-      requireState.loaded = true
-      return requireFromString(source, serverFilePath)
+
+      return require(serverFilePath)
     })
     .catch(err => {
       err.detail =
@@ -158,88 +144,74 @@ function loadExports(compiler: UniversalCompiler, options: MiddlewareOptions) {
     })
 }
 
-function loadMemoryExports(
-  compiler: UniversalCompiler,
-  options: MiddlewareOptions
-) {
-  const { webpackConfig, webpackCompiler } = compiler.server
-  const { webpackCompiler: webpackClientCompiler } = compiler.client
+// function loadMemoryExports(
+//   compiler: UniversalCompiler,
+//   options: MiddlewareOptions
+// ) {
+//   const { webpackConfig, webpackCompiler } = compiler.server
 
-  const serverFile = getServerFile(
-    webpackConfig,
-    options,
-    compiler.getCompilation().serverStats
-  )
+//   const serverFile = getServerFile(
+//     webpackConfig,
+//     options,
+//     compiler.getCompilation().serverStats
+//   )
 
-  if (!serverFile) {
-    throw Error("No server file, maybe it didn't compile?")
-  }
+//   if (!serverFile) {
+//     throw Error("No server file, maybe it didn't compile?")
+//   }
 
-  const serverFilePath = `${
-    webpackConfig.output ? webpackConfig.output.path : ""
-  }/${serverFile}`
+//   const serverFilePath = `${
+//     webpackConfig.output ? webpackConfig.output.path : ""
+//   }/${serverFile}`
 
-  const serverFS = webpackCompiler.outputFileSystem
-  const clientFS = webpackClientCompiler.outputFileSystem
+//   return new Promise((res, rej) => {
+//     const fileExists = ((webpackCompiler.outputFileSystem as unknown) as IFs).existsSync(
+//       serverFilePath
+//     )
 
-  ufs
-    .use(serverFS)
-    .use(clientFS)
-    .use(ofs)
-  patchFs(ufs)
-  patchRequire(ufs)
+//     if (fileExists) {
+//       res(serverFilePath)
+//     } else {
+//       rej("No File")
+//     }
+//   })
+//     .then((source: string) => {
+//       decache(source)
 
-  try {
-    const fileExists = ((webpackCompiler.outputFileSystem as unknown) as IFs).existsSync(
-      serverFilePath
-    )
-    const foundStack = requireFind(serverFilePath)
-
-    if (foundStack && requireState.loaded) {
-      decache(serverFilePath)
-
-      requireState.loaded = false
-    }
-
-    if (fileExists) {
-      requireState.loaded = true
-
-      return require(serverFilePath)
-    }
-  } catch (err) {
-    err.detail =
-      "The error above was thrown while trying to load the built server file from memory:\n"
-    err.detail += "The PATH: " + serverFilePath
-    throw err
-  }
-}
+//       return require(source)
+//     })
+//     .catch(err => {
+//       err.detail =
+//         "The error above was thrown while trying to load the built server file:\n"
+//       err.detail += "The PATH: " + serverFilePath
+//       throw err
+//     })
+// }
 
 export function resolveCompilation(
   compiler: UniversalCompiler,
   options: MiddlewareOptions
 ) {
+  let previousHash: string | undefined
   let promise: any
 
   return () =>
     compiler
       .resolve()
       .then(compilation => {
-        if (options && options.inMemoryFilesystem) {
-          return {
-            compilation,
-            bundle: loadMemoryExports(compiler, options)
-          }
-        }
-        if (promise && promise.compilation === compilation) {
+        if (compilation.serverStats?.hash === previousHash && promise) {
           return promise
         }
+
+        previousHash = compilation.serverStats?.hash
 
         promise = pProps({
           // @ts-ignore
           compilation,
           bundle: loadExports(compiler, options)
         })
-        promise.compilation = compilation
+
+        requireState.loaded = true
 
         return promise
       })
