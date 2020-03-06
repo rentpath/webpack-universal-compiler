@@ -4,8 +4,8 @@ import decache from "decache"
 import { Stats } from "webpack"
 import { IFs } from "memfs"
 import callsite from "callsite"
-// @ts-ignore
-import { requireFromString } from "require-from-memory"
+
+// import { requireFromString } from "require-from-memory"
 
 import { pProps } from "../utils/p-utils"
 
