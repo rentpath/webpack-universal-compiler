@@ -41,7 +41,7 @@ export function isMiddlewareOptions(config?: any): config is MiddlewareOptions {
     "report",
     "notify",
     "headers",
-    "findServerAssetName"
+    "findServerAssetName",
   ]
 
   if (!config) {
@@ -49,7 +49,7 @@ export function isMiddlewareOptions(config?: any): config is MiddlewareOptions {
   }
 
   if (config && !config.run) {
-    if (allOptions.some(key => Object.keys(config).includes(key))) {
+    if (allOptions.some((key) => Object.keys(config).includes(key))) {
       return true
     }
     return true

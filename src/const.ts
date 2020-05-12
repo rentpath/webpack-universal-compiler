@@ -17,5 +17,5 @@ export const statsToStringOptions = {
   publicPath: false,
   performance: false,
   moduleTrace: true,
-  chunkModules: false
+  chunkModules: false,
 }

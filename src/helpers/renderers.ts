@@ -10,7 +10,7 @@ const prettyError = new PrettyError()
 prettyError.appendStyle({
   "pretty-error > header": { display: "none" },
   "pretty-error > trace": { marginTop: 0 },
-  "pretty-error > trace > item": { marginBottom: 0 }
+  "pretty-error > trace > item": { marginBottom: 0 },
 })
 
 const defaultStatsOptions = {
@@ -23,7 +23,7 @@ const defaultStatsOptions = {
   timings: false,
   version: false,
   builtAt: false,
-  entrypoints: false
+  entrypoints: false,
 }
 
 const renderGenericError = (err: NodeJS.ErrnoException) => {
@@ -89,5 +89,5 @@ export default {
   failure: renderFailure,
   invalidate: renderInvalidate,
   error: renderError,
-  stats: renderStats
+  stats: renderStats,
 }

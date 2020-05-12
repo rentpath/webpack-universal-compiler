@@ -3,7 +3,7 @@ import { EventEmitter } from "events"
 
 import {
   ObserveWebpackIsoCompilerState,
-  SimpleCompiler
+  SimpleCompiler,
 } from "../types/compiler"
 
 export const resetState = (state = {}) => {
@@ -13,12 +13,12 @@ export const resetState = (state = {}) => {
     error: null,
     lastStats: {
       clientStats: undefined,
-      serverStats: undefined
+      serverStats: undefined,
     },
     compilation: {
       stats: undefined,
-      duration: undefined
-    }
+      duration: undefined,
+    },
   })
 }
 export function observeIsomorphicCompilers(
@@ -38,7 +38,7 @@ export function observeIsomorphicCompilers(
       beginAt: Date.now(),
       error: null,
       compilation: null,
-      lastStats: null
+      lastStats: null,
     })
     eventEmitter.emit("begin")
   }
@@ -81,8 +81,8 @@ export function observeIsomorphicCompilers(
           clientStats:
             clientErrors && clientErrors.stats ? clientErrors.stats : undefined,
           serverErrors:
-            serverErrors && serverErrors.stats ? serverErrors.stats : undefined
-        }
+            serverErrors && serverErrors.stats ? serverErrors.stats : undefined,
+        },
       })
 
       eventEmitter.emit("error", eitherError)
@@ -90,20 +90,20 @@ export function observeIsomorphicCompilers(
       const compilation = {
         duration: state.beginAt ? Date.now() - state.beginAt : null,
         clientStats: clientCompiler.getCompilation().stats,
-        serverStats: serverCompiler.getCompilation().stats
+        serverStats: serverCompiler.getCompilation().stats,
       }
 
       Object.defineProperty(compilation, "stats", {
         value: compilation.clientStats,
         enumerable: false,
-        configurable: true
+        configurable: true,
       })
 
       Object.assign(state, {
         isCompiling: false,
         error: null,
         eitherError: null,
-        compilation
+        compilation,
       })
       eventEmitter.emit("end", compilation)
     }
@@ -119,12 +119,12 @@ export function observeIsomorphicCompilers(
   clientCompiler
     .on("begin", onBegin)
     .on("end", onEnd)
-    .on("error", err => onError("client", err))
+    .on("error", (err) => onError("client", err))
 
   serverCompiler
     .on("begin", onBegin)
     .on("end", onEnd)
-    .on("error", err => onError("server", err))
+    .on("error", (err) => onError("server", err))
 
   return { eventEmitter, state }
 }

@@ -30,7 +30,7 @@ export interface ReporterOptionsIsomorphicCompiler
   extends ReporterOptionsSingleCompiler {
   printStats?: ({
     clientStats,
-    serverStats
+    serverStats,
   }: {
     clientStats: webpack.Stats
     serverStats: webpack.Stats

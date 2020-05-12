@@ -8,7 +8,7 @@ import {
   isClientSingleCompiler,
   isSingleConfiguration,
   isClientConfiguration,
-  isServerConfiguration
+  isServerConfiguration,
 } from "../types/type-guards"
 
 function checkForSingleCompiler(

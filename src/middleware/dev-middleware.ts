@@ -3,7 +3,7 @@ import { Request, Response, NextFunction } from "express"
 import { Compiler, OutputFileSystem, Stats } from "webpack"
 import { compose } from "compose-middleware"
 import webpackDevMiddleware, {
-  WebpackDevMiddleware
+  WebpackDevMiddleware,
 } from "webpack-dev-middleware"
 
 import { MiddlewareOptions } from "../types/middleware"
@@ -23,20 +23,20 @@ function createStubbedWebpackCompiler(webpackCompiler: Compiler) {
         if (property === "done") {
           return {
             tap: (_name: string, handler: HandlerFunc) =>
-              doneHandlers.push(handler)
+              doneHandlers.push(handler),
           }
         }
 
         return {
           tap: () => {
             // void
-          }
+          },
         }
       },
       set() {
         /* istanbul ignore next */
         return true
-      }
+      },
     }
   )
 
@@ -58,13 +58,13 @@ function createStubbedWebpackCompiler(webpackCompiler: Compiler) {
     set() {
       // Do not modify any property of the compiler, specially the `outputFileSystem`
       return true
-    }
+    },
   })
 
   return {
     stubbedWebpackCompiler,
     notifyDone: (stats: Stats) =>
-      doneHandlers.forEach(handler => handler(stats))
+      doneHandlers.forEach((handler) => handler(stats)),
   }
 }
 
@@ -87,7 +87,7 @@ export function devMiddleware(
         : "/",
     watchOptions: undefined,
     index: "blah-blah-index-blah",
-    headers: options.headers
+    headers: options.headers,
   })
 
   if (webpackCompiler.outputFileSystem !== devMiddleware.fileSystem) {
@@ -116,6 +116,6 @@ export function devMiddleware(
 
       next()
     },
-    devMiddleware
+    devMiddleware,
   ])
 }

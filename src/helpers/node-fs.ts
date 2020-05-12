@@ -5,5 +5,5 @@ import mkdirp from "mkdirp"
 export const nodeFs = () => ({
   ...fs,
   mkdirp,
-  join
+  join,
 })

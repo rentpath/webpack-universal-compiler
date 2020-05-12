@@ -20,9 +20,9 @@ const getServerAsset = (stats: Stats.ToJsonOutput) => {
         const serverEntryAsArray = (stats.assetsByChunkName[
           entrypoint
         ] as unknown) as string[]
-        serverFileName = serverEntryAsArray.find(asset => /\.js$/.test(asset))
+        serverFileName = serverEntryAsArray.find((asset) => /\.js$/.test(asset))
       } else {
-        serverFileName = [stats.assetsByChunkName[entrypoint]].find(asset =>
+        serverFileName = [stats.assetsByChunkName[entrypoint]].find((asset) =>
           /\.js$/.test((asset as unknown) as string)
         )
       }
@@ -32,17 +32,17 @@ const getServerAsset = (stats: Stats.ToJsonOutput) => {
       }
 
       throw Object.assign(new Error("Seems that there is no server file!"), {
-        hideStack: true
+        hideStack: true,
       })
     }
 
     throw Object.assign(new Error("Seems that there are no assets?"), {
-      hideStack: true
+      hideStack: true,
     })
   }
 
   throw Object.assign(new Error("No entrypoint in stats!"), {
-    hideStack: true
+    hideStack: true,
   })
 }
 
@@ -62,14 +62,14 @@ function getServerFile(
       modules: false,
       children: false,
       assets: true,
-      version: false
+      version: false,
     })
 
     return getServerAsset(statsJson)
   }
 
   throw Object.assign(new Error("Coudldn't find server entry JS file!"), {
-    hideStack: true
+    hideStack: true,
   })
 }
 
@@ -114,7 +114,7 @@ function loadExports(compiler: UniversalCompiler, options: MiddlewareOptions) {
     .then((source: string) => {
       return require(source)
     })
-    .catch(err => {
+    .catch((err) => {
       err.detail =
         "The error above was thrown while trying to load the built server file:\n"
       err.detail += "The PATH: " + serverFilePath
@@ -176,7 +176,7 @@ export function resolveCompilation(
   return () =>
     compiler
       .resolve()
-      .then(compilation => {
+      .then((compilation) => {
         if (compilation.serverStats?.hash === previousHash && promise) {
           return promise
         }
@@ -186,12 +186,12 @@ export function resolveCompilation(
         promise = pProps({
           // @ts-ignore
           compilation,
-          bundle: loadExports(compiler, options)
+          bundle: loadExports(compiler, options),
         })
 
         return promise
       })
-      .catch(e => {
+      .catch((e) => {
         throw e
       })
 }

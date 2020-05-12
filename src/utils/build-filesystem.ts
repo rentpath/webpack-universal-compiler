@@ -16,13 +16,13 @@ export function buildInMemoryFileSystem(
   const newClientFilesystem = {
     ...fs1,
     ...clientVolume,
-    join
+    join,
   }
 
   const newServerFilesystem = {
     ...fs2,
     ...serverVolume,
-    join
+    join,
   }
 
   /**

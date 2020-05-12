@@ -9,7 +9,7 @@ import { ReporterOptionsIsomorphicCompiler } from "../types/compiler"
 
 export const extraSymbols = {
   ...symbols,
-  separator: process.platform !== "win32" ? "━" : "-"
+  separator: process.platform !== "win32" ? "━" : "-",
 }
 
 export const extraRenderers = {
@@ -21,7 +21,7 @@ export const extraRenderers = {
     str += chalk.dim(extraSymbols.separator.repeat(35))
 
     return str
-  }
+  },
 }
 
 export function startReportingWebpackIsomorphic(
@@ -40,7 +40,7 @@ export function startReportingWebpackIsomorphic(
 
       return indentString(str, 4)
     },
-    ...options
+    ...options,
   } as ReporterOptionsIsomorphicCompiler
 
   return startReportingWebpack(compiler, options)

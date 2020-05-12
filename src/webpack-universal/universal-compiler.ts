@@ -8,13 +8,13 @@ import { SimpleCompiler } from "../types/compiler"
 
 import {
   observeIsomorphicCompilers,
-  resetState
+  resetState,
 } from "./universal-compiler-observer"
 import { ObserveWebpackIsoCompilerState, ErrWithStats } from "../types/compiler"
 
 const createSubFacade = (compiler: SimpleCompiler) => ({
   webpackConfig: compiler.webpackConfig,
-  webpackCompiler: compiler.webpackCompiler
+  webpackCompiler: compiler.webpackCompiler,
 })
 
 export function universalCompiler(
@@ -86,7 +86,7 @@ export function universalCompiler(
 
       handler =
         handler &&
-        wrap(handler, handler => {
+        wrap(handler, (handler) => {
           if (!state.isCompiling) {
             if (state.error) {
               handler(state.error, state.compilation)
@@ -111,7 +111,7 @@ export function universalCompiler(
     unwatch() {
       return Promise.all([
         clientCompiler.unwatch(),
-        serverCompiler.unwatch()
+        serverCompiler.unwatch(),
       ]).then(() => {
         // void
       })
@@ -131,7 +131,7 @@ export function universalCompiler(
           return Promise.resolve({
             duration: 0,
             clientStats,
-            serverStats
+            serverStats,
           })
         }
         return Promise.reject(error)
@@ -146,7 +146,7 @@ export function universalCompiler(
         resolve?: (any: any) => void
         reject?: (any: any) => void
       } = {
-        resolve: undefined
+        resolve: undefined,
       }
 
       deferred.promise = new Promise((res, rej) => {
@@ -183,7 +183,7 @@ export function universalCompiler(
       compiler.on("error", onError).on("end", onEnd)
 
       return deferred.promise
-    }
+    },
   })
 
   return compiler

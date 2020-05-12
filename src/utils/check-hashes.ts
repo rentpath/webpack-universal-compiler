@@ -3,7 +3,7 @@ import chalk from "chalk"
 import {
   UniversalCompiler,
   ReporterOptionsIsomorphicCompiler,
-  CompilationStats
+  CompilationStats,
 } from "../types/compiler"
 
 interface Reporter {
@@ -14,7 +14,7 @@ const configProperties = [
   "output.filename",
   "output.chunkFilename",
   "output.hotUpdateMainFilename",
-  "output.hotUpdateChunkFilename"
+  "output.hotUpdateChunkFilename",
 ]
 
 function verifyAssets(compilation: CompilationStats, options: Reporter) {
@@ -34,7 +34,7 @@ function verifyAssets(compilation: CompilationStats, options: Reporter) {
         children: false,
         modules: false,
         timings: false,
-        hash: false
+        hash: false,
       })
 
       const assetsWithHash =
@@ -64,9 +64,9 @@ function verifyAssets(compilation: CompilationStats, options: Reporter) {
   str = `${chalk.yellow(
     "WARN"
   )}: Assets with a hash in its name were detected on the `
-  str += `${types.map(type => chalk.bold(type)).join(" and ")}:\n`
+  str += `${types.map((type) => chalk.bold(type)).join(" and ")}:\n`
 
-  assets.forEach(asset => {
+  assets.forEach((asset) => {
     str += `- ${asset.name}\n`
   })
 
@@ -89,7 +89,7 @@ If you feel this was a false positive, please ignore this warning.
 export function checkHashes(compiler: UniversalCompiler, options: Reporter) {
   compiler.once("end", (compilation: CompilationStats) => {
     if (!verifyAssets(compilation, options)) {
-      compiler.once("end", compilation => verifyAssets(compilation, options))
+      compiler.once("end", (compilation) => verifyAssets(compilation, options))
     }
   })
 }

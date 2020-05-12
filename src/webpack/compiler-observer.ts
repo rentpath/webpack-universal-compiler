@@ -32,9 +32,9 @@ export function observeWebpackCompiler(webpackCompiler: webpack.Compiler) {
     isCompiling: false,
     error: null,
     compilation: {
-      duration: undefined
+      duration: undefined,
     },
-    webpackWatching: null
+    webpackWatching: null,
   }
   const addHook = createAddHook(webpackCompiler)
 
@@ -49,7 +49,7 @@ export function observeWebpackCompiler(webpackCompiler: webpack.Compiler) {
     Object.assign(state, {
       isCompiling: true,
       error: null,
-      compilation: null
+      compilation: null,
     })
     eventEmitter.emit("begin")
 
@@ -58,7 +58,7 @@ export function observeWebpackCompiler(webpackCompiler: webpack.Compiler) {
         Object.assign(state, {
           isCompiling: false,
           error,
-          compilation: null
+          compilation: null,
         })
         eventEmitter.emit("error", error)
       }
@@ -76,13 +76,13 @@ export function observeWebpackCompiler(webpackCompiler: webpack.Compiler) {
 
     if (stats.hasErrors()) {
       const error = Object.assign(new Error("Webpack compilation failed"), {
-        stats
+        stats,
       })
 
       Object.assign(state, {
         isCompiling: false,
         error,
-        compilation: null
+        compilation: null,
       })
 
       eventEmitter.emit("error", error)
@@ -95,8 +95,8 @@ export function observeWebpackCompiler(webpackCompiler: webpack.Compiler) {
           duration:
             stats.endTime && stats.startTime
               ? stats.endTime - stats.startTime
-              : null
-        }
+              : null,
+        },
       })
       eventEmitter.emit("end", state.compilation)
     }
@@ -109,14 +109,14 @@ export function observeWebpackCompiler(webpackCompiler: webpack.Compiler) {
       Object.assign(state, {
         isCompiling: true,
         error: null,
-        compilation: null
+        compilation: null,
       })
       eventEmitter.emit("begin")
       callback()
     }
   )
 
-  addHook("failed", error => {
+  addHook("failed", (error) => {
     Object.assign(state, { isCompiling: false, error, compilation: null })
     eventEmitter.emit("error", error)
   })
@@ -135,7 +135,7 @@ export function observeWebpackCompiler(webpackCompiler: webpack.Compiler) {
 
     if (state.isCompiling) {
       const error = Object.assign(new Error("Webpack compilation cancelled"), {
-        hideStack: true
+        hideStack: true,
       })
 
       Object.assign(state, { isCompiling: false, error, compilation: null })
@@ -146,6 +146,6 @@ export function observeWebpackCompiler(webpackCompiler: webpack.Compiler) {
   return {
     eventEmitter,
     state,
-    addHook
+    addHook,
   }
 }

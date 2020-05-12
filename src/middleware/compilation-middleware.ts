@@ -9,7 +9,7 @@ import { patchRequire, patchFs } from "../../external/fs-monkey"
 import { ufs } from "unionfs"
 
 const ofs = {
-  ...fs
+  ...fs,
 }
 
 export function compilationMiddleware(
@@ -53,13 +53,13 @@ export function compilationMiddleware(
       next()
     } else {
       resolvedCompile()
-        .then(compilation => {
+        .then((compilation) => {
           if (compilation && compilation.bundle) {
             res.locals.universal = compilation
           }
         })
         .then(next, next)
-        .catch(e => {
+        .catch((e) => {
           throw e
         })
     }

@@ -7,7 +7,7 @@ import { MiddlewareOptions } from "../types/middleware"
 const createHtml = (message: string) => {
   const body = anser.ansiToHtml(anser.escapeForHtml(message), {
     // eslint-disable-next-line @typescript-eslint/camelcase
-    use_classes: true
+    use_classes: true,
   })
   return `<!DOCTYPE html>
       <html lang="en">

@@ -7,7 +7,7 @@ import renderers from "../helpers/renderers"
 import {
   UniversalCompiler,
   SimpleCompiler,
-  ErrWithStats
+  ErrWithStats,
 } from "../types/compiler"
 
 export interface NotifierOptions {
@@ -40,7 +40,7 @@ function createNotifier({ title, icon, sound }: NotifierOptions) {
       title,
       message,
       sound,
-      icon
+      icon,
     })
 }
 
@@ -52,7 +52,7 @@ export function startNotifying(
     title: undefined,
     icon: path.resolve(__dirname, "../../webpack-logo.png"),
     sound: false,
-    ...options
+    ...options,
   }
 
   options.title = options.title || getDefaultTitle()
@@ -84,6 +84,6 @@ export function startNotifying(
 
   return {
     stop: stopNotifying,
-    options
+    options,
   }
 }

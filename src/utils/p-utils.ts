@@ -26,13 +26,13 @@ export const pReflect = async <T>(promise: Promise<T>) => {
     return {
       isFulfilled: true,
       isRejected: false,
-      value
+      value,
     }
   } catch (error) {
     return {
       isFulfilled: false,
       isRejected: true,
-      reason: error
+      reason: error,
     }
   }
 }
@@ -41,7 +41,7 @@ export const pTry = <TArgs, TResult>(
   fn: (...args: TArgs[]) => TResult,
   ...args: TArgs[]
 ) =>
-  new Promise(resolve => {
+  new Promise((resolve) => {
     resolve(fn(...args))
   })
 
@@ -101,15 +101,15 @@ export const pLimit = (concurrency: number) => {
   const generator = <T, TArgs extends any[]>(
     fn: () => Promise<T>,
     ...args: TArgs
-  ) => new Promise(resolve => enqueue(fn, resolve, ...args))
+  ) => new Promise((resolve) => enqueue(fn, resolve, ...args))
 
   Object.defineProperties(generator, {
     activeCount: {
-      get: () => activeCount
+      get: () => activeCount,
     },
     pendingCount: {
-      get: () => queue.length
-    }
+      get: () => queue.length,
+    },
   })
 
   return generator
@@ -118,7 +118,7 @@ export const pLimit = (concurrency: number) => {
 export const pSettle = async <T>(promises: Promise<T>[], options: {} = {}) => {
   const { concurrency } = {
     concurrency: Infinity,
-    ...options
+    ...options,
   }
 
   if (!(typeof concurrency === "number" && concurrency >= 1)) {
@@ -130,7 +130,7 @@ export const pSettle = async <T>(promises: Promise<T>[], options: {} = {}) => {
   const limit = pLimit(concurrency)
 
   if (typeof limit === "function") {
-    return Promise.all(promises.map(item => pReflect(limit(() => item))))
+    return Promise.all(promises.map((item) => pReflect(limit(() => item))))
   }
 
   return TypeError("Something went wrong with pSettle")
@@ -259,7 +259,7 @@ const mapAMap = async <
   options?: PMapOptions
 ) => {
   const awaitedEntries: IterableObject<any> = [
-    ...map.entries()
+    ...map.entries(),
   ].map(async ([key, value]) => [key, await value])
   const values = await pMap(
     awaitedEntries,

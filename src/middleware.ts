@@ -16,7 +16,7 @@ import {
   isMultiCompiler,
   isSingleCompiler,
   isMultiConfig,
-  isSingleConfiguration
+  isSingleConfiguration,
 } from "./types/type-guards"
 import { NotifierOptions } from "./utils/os-notifications"
 
@@ -29,7 +29,7 @@ function parseOptions(options: MiddlewareOptions) {
     report: { stats: "once" },
     notify: true,
     headers: { "Cache-Control": "max-age=0, must-revalidate" },
-    ...options
+    ...options,
   }
 
   options.report = options.report === true ? {} : options.report
@@ -50,14 +50,14 @@ function parseArgs(
   if (isMultiCompiler(argOne) && isMiddlewareOptions(argTwo)) {
     return {
       compiler: universalCompiler(argOne.compilers[0], argOne.compilers[1]),
-      options: parseOptions(argTwo)
+      options: parseOptions(argTwo),
     }
   }
 
   if (isMultiConfig(argOne) && isMiddlewareOptions(argTwo)) {
     return {
       compiler: universalCompiler(argOne[0], argOne[1]),
-      options: parseOptions(argTwo)
+      options: parseOptions(argTwo),
     }
   }
 
@@ -68,7 +68,7 @@ function parseArgs(
   ) {
     return {
       compiler: universalCompiler(argOne, argTwo),
-      options: parseOptions(argThree)
+      options: parseOptions(argThree),
     }
   }
 
@@ -79,7 +79,7 @@ function parseArgs(
   ) {
     return {
       compiler: universalCompiler(argOne, argTwo),
-      options: parseOptions(argThree)
+      options: parseOptions(argThree),
     }
   }
 
@@ -136,12 +136,12 @@ export function universalMiddleware(
     reportErrorMiddleware(compiler, options),
     ...(options.hot // @ts-ignore
       ? [webpackHotMiddleware(compiler.client.webpackCompiler)]
-      : [])
+      : []),
   ]
 
   compiler.watch()
 
   return Object.assign(compose(middleware), {
-    compiler
+    compiler,
   })
 }

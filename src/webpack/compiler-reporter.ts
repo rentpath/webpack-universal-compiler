@@ -7,7 +7,7 @@ import renderers from "../helpers/renderers"
 import {
   SimpleCompiler,
   CompilationStats,
-  ReporterOptionsSingleCompiler
+  ReporterOptionsSingleCompiler,
 } from "../types/compiler"
 
 export function startReportingWebpack(
@@ -25,8 +25,8 @@ export function startReportingWebpack(
     printInvalidate: () => `${renderers.invalidate()}\n`,
     printStats: ({ stats }) =>
       `\n${indentString(renderers.stats(stats), 4)}\n\n`,
-    printError: err => `\n${indentString(renderers.error(err), 4)}\n\n`,
-    ...options
+    printError: (err) => `\n${indentString(renderers.error(err), 4)}\n\n`,
+    ...options,
   }
 
   const resetDisplayStats = () => {
@@ -92,6 +92,6 @@ export function startReportingWebpack(
 
   return {
     stop: stopReporting,
-    options
+    options,
   }
 }
