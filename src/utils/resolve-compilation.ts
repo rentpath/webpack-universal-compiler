@@ -1,9 +1,7 @@
 /* eslint-disable @typescript-eslint/ban-ts-ignore */
-import { resolve, dirname } from "path"
-import decache from "decache"
+import { default as decache } from "decache"
 import { Stats } from "webpack"
 import { IFs } from "memfs"
-import callsite from "callsite"
 
 // import { requireFromString } from "require-from-memory"
 
@@ -11,10 +9,6 @@ import { pProps } from "../utils/p-utils"
 
 import { UniversalCompiler } from "../types/compiler"
 import { MiddlewareOptions } from "../types/middleware"
-
-const requireState = {
-  loaded: false
-}
 
 const getServerAsset = (stats: Stats.ToJsonOutput) => {
   if (stats.entrypoints) {
@@ -79,24 +73,6 @@ function getServerFile(
   })
 }
 
-function requireFind(moduleName: string) {
-  if (moduleName[0] === ".") {
-    const stack = callsite()
-    for (const i in stack) {
-      const filename = stack[i].getFileName()
-      if (filename !== module.filename) {
-        moduleName = resolve(dirname(filename), moduleName)
-        break
-      }
-    }
-  }
-  try {
-    return require.resolve(moduleName)
-  } catch (e) {
-    return
-  }
-}
-
 function loadExports(compiler: UniversalCompiler, options: MiddlewareOptions) {
   const { webpackConfig, webpackCompiler } = compiler.server
 
@@ -110,14 +86,24 @@ function loadExports(compiler: UniversalCompiler, options: MiddlewareOptions) {
     return Promise.resolve(undefined)
   }
 
-  const serverFilePath = `${
+  const serverFileDir = `${
     webpackConfig.output ? webpackConfig.output.path : ""
-  }/${serverFile}`
+  }`
+
+  const serverFilePath = `${serverFileDir}/${serverFile}`
 
   return new Promise((res, rej) => {
     const fileExists = ((webpackCompiler.outputFileSystem as unknown) as IFs).existsSync(
       serverFilePath
     )
+
+    const outputDir = ((webpackCompiler.outputFileSystem as unknown) as IFs).readdirSync(
+      serverFileDir
+    )
+
+    for (const filename of outputDir) {
+      decache(`${outputDir}/${filename}`)
+    }
 
     if (fileExists) {
       res(serverFilePath)
@@ -126,15 +112,7 @@ function loadExports(compiler: UniversalCompiler, options: MiddlewareOptions) {
     }
   })
     .then((source: string) => {
-      const foundStack = requireFind(source)
-
-      if (foundStack && requireState.loaded) {
-        decache(serverFilePath)
-
-        requireState.loaded = false
-      }
-
-      return require(serverFilePath)
+      return require(source)
     })
     .catch(err => {
       err.detail =
@@ -210,8 +188,6 @@ export function resolveCompilation(
           compilation,
           bundle: loadExports(compiler, options)
         })
-
-        requireState.loaded = true
 
         return promise
       })

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/ban-ts-ignore */
 import webpack, { Compiler } from "webpack"
 import assert from "assert"
 import { observeWebpackCompiler } from "./compiler-observer"
@@ -33,6 +34,7 @@ export function simpleCompiler(
     webpackCompiler
   )
 
+  // @ts-ignore
   webpackCompiler.outputFileSystem = nodeFs()
 
   const compiler = Object.assign(eventEmitter, {
