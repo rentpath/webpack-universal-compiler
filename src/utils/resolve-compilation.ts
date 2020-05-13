@@ -122,50 +122,6 @@ function loadExports(compiler: UniversalCompiler, options: MiddlewareOptions) {
     })
 }
 
-// function loadMemoryExports(
-//   compiler: UniversalCompiler,
-//   options: MiddlewareOptions
-// ) {
-//   const { webpackConfig, webpackCompiler } = compiler.server
-
-//   const serverFile = getServerFile(
-//     webpackConfig,
-//     options,
-//     compiler.getCompilation().serverStats
-//   )
-
-//   if (!serverFile) {
-//     throw Error("No server file, maybe it didn't compile?")
-//   }
-
-//   const serverFilePath = `${
-//     webpackConfig.output ? webpackConfig.output.path : ""
-//   }/${serverFile}`
-
-//   return new Promise((res, rej) => {
-//     const fileExists = ((webpackCompiler.outputFileSystem as unknown) as IFs).existsSync(
-//       serverFilePath
-//     )
-
-//     if (fileExists) {
-//       res(serverFilePath)
-//     } else {
-//       rej("No File")
-//     }
-//   })
-//     .then((source: string) => {
-//       decache(source)
-
-//       return require(source)
-//     })
-//     .catch(err => {
-//       err.detail =
-//         "The error above was thrown while trying to load the built server file:\n"
-//       err.detail += "The PATH: " + serverFilePath
-//       throw err
-//     })
-// }
-
 export function resolveCompilation(
   compiler: UniversalCompiler,
   options: MiddlewareOptions

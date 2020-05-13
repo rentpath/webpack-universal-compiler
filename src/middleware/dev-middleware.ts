@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/ban-ts-ignore */
 import { Request, Response, NextFunction } from "express"
 import { Compiler, OutputFileSystem, Stats } from "webpack"
 import { compose } from "compose-middleware"
@@ -78,7 +77,6 @@ export function devMiddleware(
     webpackCompiler
   )
 
-  // @ts-ignore
   const devMiddleware = webpackDevMiddleware(stubbedWebpackCompiler, {
     logLevel: "silent",
     publicPath:

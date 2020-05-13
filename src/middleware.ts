@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/ban-ts-ignore */
 import chalk from "chalk"
 import { Compiler, MultiCompiler, Configuration } from "webpack"
 import webpackHotMiddleware from "webpack-hot-middleware"
@@ -134,7 +133,7 @@ export function universalMiddleware(
     compilationMiddleware(compiler, options),
     devMiddleware(compiler, options),
     reportErrorMiddleware(compiler, options),
-    ...(options.hot // @ts-ignore
+    ...(options.hot
       ? [webpackHotMiddleware(compiler.client.webpackCompiler)]
       : []),
   ]
