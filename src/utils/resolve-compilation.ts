@@ -102,7 +102,7 @@ function loadExports(compiler: UniversalCompiler, options: MiddlewareOptions) {
     )
 
     for (const filename of outputDir) {
-      decache(`${outputDir}/${filename}`)
+      decache(`${serverFileDir}/${filename}`)
     }
 
     if (fileExists) {
